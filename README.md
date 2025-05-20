@@ -14,14 +14,18 @@ Finalement, pour le linting, j'ai choisis PyLint qui a beaucoup de support et fa
 [Suivre ce lien](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/) pour installer un .venv.
 
 ### Installer les librairies:
-La commande suivante: `pip install -r requirements.txt`
+La commande dans le terminal est la suivante: `pip install -r requirements.txt`
 
 ### Build docker and run
-La commande est: `docker-compose up --build`
+La commande dans le terminal est: `docker-compose up --build`
 
 ### Execution de l'application
 
-Python: `python app.py`
+Terminal: `python app.py`
+
+### Execitopm des tests
+
+Terminal: `pytest`
 
 ## CI/CD Pipeline:
 
