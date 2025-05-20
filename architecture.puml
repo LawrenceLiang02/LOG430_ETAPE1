@@ -1,0 +1,32 @@
+@startuml architecture
+actor Developer
+actor User
+database "Docker Hub" as Registry
+cloud "GitHub Actions" as CI
+
+package "Local Environment" {
+    component "Flask App" as FlaskComponent
+    component "Test Suite" as Tests
+    component "Dockerfile" as Dockerfile
+    component "docker-compose.yml" as Compose
+}
+
+package "CI/CD Pipeline" {
+    CI --> FlaskComponent : checkout & lint/test
+    CI --> Dockerfile : Build Image
+    CI --> Registry : Push Image
+}
+
+cloud "Docker Runtime" {
+    node "Docker Container" {
+        component "Flask App" as RuntimeFlask
+    }
+}
+
+Developer --> FlaskComponent : Develop
+Developer --> Compose : Launch Locally
+Compose --> Dockerfile : Build
+Compose --> RuntimeFlask : Run in Container
+
+User --> RuntimeFlask : Access via HTTP
+@enduml

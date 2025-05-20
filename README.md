@@ -8,7 +8,14 @@ De plus, afin de conteneuriser l'application, j'utilise docker qui est très fac
 
 Finalement, pour le linting, j'ai choisis PyLint qui a beaucoup de support et facile à troubleshoot.
 
+## L'architecture
+
+![alt text](image.png)
+
 ## Instruction d'installation et execution
+
+### Cloner le projet
+`git clone https://github.com/LawrenceLiang02/LOG430.git`
 
 ### Installer un .venv
 [Suivre ce lien](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/) pour installer un .venv.
