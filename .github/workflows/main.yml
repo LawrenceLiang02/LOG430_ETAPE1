@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 env:
-  IMAGE_NAME: yourdockerhubusername/mon-api-flask
+  IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/mon-api-flask
 
 jobs:
   lint:
