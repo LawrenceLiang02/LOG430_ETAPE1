@@ -1,16 +1,17 @@
-FROM python:3
+# Utilise une image Python officielle
+FROM python:3.11-slim
 
+# Crée un dossier pour l'app
 WORKDIR /app
 
-ENV FLASK_APP=app.py
-
-ENV FLASK_ENV=development
-
-COPY ./requirements.txt .
-
-RUN pip install -r requirements.txt
+# Copie les fichiers
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# CMD ["python", "app.py"]
-CMD ["sh", "-c", "sleep 15 && python app.py"]
+# Expose le port utilisé par Flask
+EXPOSE 5000
+
+# Commande pour démarrer l'app
+CMD ["python", "app.py"]
