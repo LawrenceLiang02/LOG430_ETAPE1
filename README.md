@@ -23,7 +23,7 @@ La commande dans le terminal est: `docker-compose up --build`
 
 Terminal: `python app.py`
 
-### Execitopm des tests
+### Execution des tests
 
 Terminal: `pytest`
 
