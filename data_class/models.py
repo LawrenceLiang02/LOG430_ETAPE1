@@ -21,7 +21,7 @@ class Product(Base):
     quantity = Column(Integer, default=0)
 
     def __repr__(self):
-        return f"<Product(id={self.id}, name='{self.name}', price={self.price}, quantity={self.quantity})>"   
+        return f"<Product(id={self.id}, name='{self.name}', price={self.price}, quantity={self.quantity})>"
 
 class Sale(Base):
     """This is the data model for a sale"""

@@ -1,2 +1,4 @@
 [FORMAT]
 max-line-length=240
+disable=too-few-public-methods
+disable = broad-exception-caught

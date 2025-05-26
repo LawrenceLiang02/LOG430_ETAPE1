@@ -62,10 +62,10 @@ def search_product_by(type_, keyword):
             product = session.get(Product, int(keyword))
             return [product] if product else []
 
-        elif type_ == "name":
+        if type_ == "name":
             return session.query(Product).filter(Product.name.ilike(f"%{keyword}%")).all()
 
-        elif type_ == "category":
+        if type_ == "category":
             return session.query(Product).filter(Product.category.ilike(f"%{keyword}%")).all()
 
         else:
