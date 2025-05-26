@@ -1,21 +1,30 @@
-# LOG430
+# LOG430 - Étape 1
 Nom: Lawrence Liang
 
 ## Description
-Ceci est un API utilisant Python Flask. Python Flask est un quadriciel permettant de facilement mettre en place des URL et faire un backend rapide. De plus, il exite beaucoup d'aide, et est compatible avec le système de test, soit PyTest.
+Ceci est une application console qui gère l'inventaire et les ventes d'une compagnie. 
 
-De plus, afin de conteneuriser l'application, j'utilise docker qui est très facile et straight forward. 
+Dans ce projet, j'applique:
+- Un workflow CI/CD retrouvé dans la page "Actions" de GitHub
+- Un conteneur Docker qui est publié sur DockerHub
+- Une application CRUD qui gère les ventes et les produits
+- Des tests unitaires automatisés sur chaque branche à chaque commit.
+- Automatiser l'utilisation d'un Linter pour vérifier mon code source
 
-Finalement, pour le linting, j'ai choisis PyLint qui a beaucoup de support et facile à troubleshoot.
+Les piles technologiques utilisé sont:
+- Python pour la logique
+- SQLite pour la base de donnée
+
+Ce projet a une architecture 2-tier.
 
 ## L'architecture
 
-![alt text](image.png)
+
 
 ## Instruction d'installation et execution
 
 ### Cloner le projet
-`git clone https://github.com/LawrenceLiang02/LOG430.git`
+`git clone https://github.com/LawrenceLiang02/LOG430_ETAPE1.git`
 
 ### Installer un .venv
 [Suivre ce lien](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/) pour installer un .venv.
@@ -24,13 +33,14 @@ Finalement, pour le linting, j'ai choisis PyLint qui a beaucoup de support et fa
 La commande dans le terminal est la suivante: `pip install -r requirements.txt`
 
 ### Build docker and run
-La commande dans le terminal est: `docker-compose up --build`
+`docker-compose build`
+`docker-compose run --rm app`
 
-### Execution de l'application
+### Executer l'application localement
 
 Terminal: `python app.py`
 
-### Execution des tests
+### Executer les tests unitaires manuellement
 
 Terminal: `pytest`
 
