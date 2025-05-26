@@ -68,8 +68,7 @@ def search_product_by(type_, keyword):
         if type_ == "category":
             return session.query(Product).filter(Product.category.ilike(f"%{keyword}%")).all()
 
-        else:
-            raise ValueError("Type de recherche invalide.")
+        raise ValueError("Type de recherche invalide.")
     finally:
         session.close()
 
