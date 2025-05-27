@@ -16,7 +16,7 @@ def add_sale(product_id, quantity):
     """Record a sale of a specific product with a given quantity."""
     session = SessionLocal()
     try:
-        product = session.query(Product).get(product_id)
+        product = session.get(Product, product_id)
 
         if not product:
             print("Produit introuvable.")
@@ -76,7 +76,7 @@ def cancel_sale(sale_id):
     """Cancel a sale by its ID and restore the product's stock."""
     session = SessionLocal()
     try:
-        sale = session.query(Sale).options(joinedload(Sale.product)).get(sale_id)
+        sale = session.get(Sale, sale_id, options=[joinedload(Sale.product)])
 
         if not sale:
             print(f"Aucune vente trouvée avec l'ID {sale_id}.")
