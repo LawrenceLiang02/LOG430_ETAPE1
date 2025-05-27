@@ -1,0 +1,17 @@
+@startuml diag_deploiement
+node "Hôte Docker (Machine locale)" {
+    node "Container: app" {
+        component "app.py"
+        component "store_service.py"
+        component "models.py"
+        note right of "app.py" : Application console Python\navec SQLAlchemy
+    }
+
+    node "Container: db" {
+        database "store.db (SQLite)"
+        note right of "store.db (SQLite)" : Base de données persistée\nvia montage volume ou fichier local
+    }
+
+    "app.py" --> "store.db (SQLite)" : Accès direct via ORM
+}
+@enduml

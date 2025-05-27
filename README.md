@@ -28,8 +28,7 @@ Ceci est un système à 2 couches puisque la logique de la couche de présentati
 
 À travers le CLI, on communique avec la base de données SQLite à travers le système de fichier.
 
-![alt text](./docs/UML/lab1/image.png)
-
+![diagramme d'architecture](./docs/UML/lab1/architecture.png)
 
 ## Analyse des besoins
 
@@ -61,6 +60,16 @@ Non fonctionnels
 - **Python** : langage simple et expressif, très utilisé pour des projets rapides.
 - **SQLAlchemy** : ORM mature et compatible avec plusieurs SGBD (SQLite, PostgreSQL, etc.), facilite la persistance tout en gardant l’indépendance du SGBD.
 - **SQLite** : SGBD léger, sans configuration serveur, idéal pour une application locale.
+
+## Diagrammes
+
+### Diagramme de classe
+
+![diagramme de classe](./docs/UML/lab1/classe.png)
+
+### Diagramme de deploiement
+
+![diagramme de deploiement](./docs/UML/lab1/deploiement.png)
 
 ## Instruction d'installation et d'execution
 

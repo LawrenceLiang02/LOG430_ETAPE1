@@ -1,0 +1,18 @@
+@startuml diagramme_classe
+
+class Product {
+    +id: Integer
+    +name: String
+    +price: Float
+    +quantity: Integer
+}
+
+class Sale {
+    +id: Integer
+    +product_id: Integer
+    +quantity: Integer
+}
+
+Product "1" -- "0..*" Sale : vendu dans >
+
+@enduml
