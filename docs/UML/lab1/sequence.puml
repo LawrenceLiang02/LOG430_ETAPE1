@@ -1,0 +1,13 @@
+@startuml diag_seq
+actor Utilisateur
+participant "App Console" as App
+participant "Service Layer\n(store_service.py)" as Service
+database "Base de données\n(SQLite via ORM)" as DB
+
+Utilisateur -> App : Entrer commande (vente, ajout, etc.)
+App -> Service : Appel fonction (ex: add_sale(...))
+Service -> DB : Lire/Écrire les données (SELECT, INSERT, etc.)
+DB --> Service : Résultat (objet, confirmation)
+Service --> App : Résultat logique (succès/échec, message)
+App --> Utilisateur : Afficher résultat
+@enduml

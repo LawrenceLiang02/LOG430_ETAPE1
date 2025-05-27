@@ -1,0 +1,16 @@
+@startuml modules
+package "Présentation" {
+    component "app.py"
+}
+
+package "Logique métier" {
+    component "store_service.py"
+}
+
+package "Persistance" {
+    component "models.py"
+}
+
+"app.py" --> "store_service.py" : appelle
+"store_service.py" --> "models.py" : utilise ORM
+@enduml

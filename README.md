@@ -63,13 +63,23 @@ Non fonctionnels
 
 ## Diagrammes
 
-### Diagramme de classe
+### Diagramme de classe (vue logique)
 
 ![diagramme de classe](./docs/UML/lab1/classe.png)
 
-### Diagramme de deploiement
+### Diagramme de séquence (vue des processus)
+
+### Diagramme de deploiement (vue de déploiement)
 
 ![diagramme de deploiement](./docs/UML/lab1/deploiement.png)
+
+### Diagramme d'organisation des modules (vue d'implémentation)
+
+![diagramme de cas d'utilisation](./docs/UML/lab1/modules.png)
+
+### Diagramme des cas d'utilisations (vue des cas d'utilsiation)
+
+![diagramme de cas d'utilisation](./docs/UML/lab1/cas_utilisation.png)
 
 ## Instruction d'installation et d'execution
 

@@ -1,0 +1,15 @@
+@startuml cas_utilisation
+actor Employé
+
+usecase "Ajouter un produit" as UC1
+usecase "Enregistrer une vente" as UC2
+usecase "Annuler une vente" as UC3
+usecase "Get les details de produits" as UC4
+usecase "Get les details de sales" as UC5
+
+Employé --> UC1
+Employé --> UC2
+Employé --> UC3
+Employé --> UC4
+Employé --> UC5
+@enduml
