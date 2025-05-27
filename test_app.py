@@ -17,7 +17,6 @@ def db_session():
     Base.metadata.create_all(bind=engine)
     session = testing_session_local()
 
-    # Patch SessionLocal in store_service
     store_service.SessionLocal = lambda: session
 
     yield session
