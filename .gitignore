@@ -181,4 +181,4 @@ cython_debug/
 .cursorindexingignore
 
 .github/
-store.db
+/store.db
