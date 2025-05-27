@@ -1,0 +1,12 @@
+@startuml architecture-lab1
+title 2-Tier Architecture POS System
+
+node "App Container" {
+  component "Python CLI" as CLI
+  node "File System" as fs {
+    database "SQLite DB" as SQLite
+  }
+  CLI --> SQLite : SQLAlchemy
+}
+
+@enduml

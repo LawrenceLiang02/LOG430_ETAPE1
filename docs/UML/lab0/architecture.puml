@@ -1,0 +1,8 @@
+@startuml architecture-lab0
+title architecture console
+
+node "App Container" {
+  component "Python CLI" as CLI
+}
+
+@enduml
