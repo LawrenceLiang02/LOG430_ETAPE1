@@ -1,3 +1,4 @@
+# pylint: disable=redefined-outer-name
 """Tests"""
 import pytest
 from sqlalchemy import create_engine
@@ -14,14 +15,14 @@ def db_session():
     engine = create_engine(TEST_DATABASE_URL)
     testing_session_local = sessionmaker(bind=engine)
     Base.metadata.create_all(bind=engine)
-    db_session = testing_session_local()
+    session = testing_session_local()
 
     # Patch SessionLocal in store_service
-    store_service.SessionLocal = lambda: db_session
+    store_service.SessionLocal = lambda: session
 
-    yield db_session
+    yield session
 
-    db_session.close()
+    session.close()
     Base.metadata.drop_all(bind=engine)
 
 def test_add_product(db_session):
