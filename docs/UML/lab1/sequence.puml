@@ -1,13 +1,35 @@
 @startuml diag_seq
-actor Utilisateur
-participant "App Console" as App
-participant "Service Layer\n(store_service.py)" as Service
-database "Base de données\n(SQLite via ORM)" as DB
+actor User
+entity "app.py" as App
+entity "store_service.py" as Service
+entity "SQLite Database" as DB
 
-Utilisateur -> App : Entrer commande (vente, ajout, etc.)
-App -> Service : Appel fonction (ex: add_sale(...))
-Service -> DB : Lire/Écrire les données (SELECT, INSERT, etc.)
-DB --> Service : Résultat (objet, confirmation)
-Service --> App : Résultat logique (succès/échec, message)
-App --> Utilisateur : Afficher résultat
+User -> App: Rechercher un produit (par identifiant, nom ou catégorie)
+App -> Service: search_product_by(query)
+Service -> DB: SELECT * FROM products WHERE condition
+DB -> Service: Résultats de la recherche
+Service --> App: Retourne les produits trouvés
+App --> User: Affiche les produits
+
+User -> App: Enregistrer une vente (sélection de produits et calcul du total)
+App -> Service: add_sale(selected_products)
+Service -> DB: INSERT INTO sales (product_id, quantity, total_price)
+DB -> Service: Confirmation de l'enregistrement
+Service --> App: Retourne le succès de la vente
+App --> User: Affiche confirmation de vente
+
+User -> App: Gérer les retours (annuler une vente)
+App -> Service: cancel_sale(sale_id)
+Service -> DB: DELETE FROM sales WHERE sale_id
+DB -> Service: Confirmation de l'annulation
+Service --> App: Retourne le succès de l'annulation
+App --> User: Affiche confirmation d'annulation
+
+User -> App: Consulter l'état du stock des produits
+App -> Service: get_products()
+Service -> DB: SELECT * FROM products;
+DB -> Service: Product Info
+Service --> App: Retourne l'information du produit
+App --> User: Affiche l'information du produit
+
 @enduml
