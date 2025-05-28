@@ -1,8 +1,8 @@
 @startuml diag_seq
 actor User
-entity "app.py" as App
-entity "store_service.py" as Service
-entity "SQLite Database" as DB
+participant  "app.py" as App
+participant  "store_service.py" as Service
+database  "SQLite Database" as DB
 
 User -> App: Rechercher un produit (par identifiant, nom ou catégorie)
 App -> Service: search_product_by(query)
