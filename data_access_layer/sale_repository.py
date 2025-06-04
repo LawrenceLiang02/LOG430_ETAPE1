@@ -1,6 +1,6 @@
-"""Module to handle store management"""
+"""Sale module for the data access layer"""
 from sqlalchemy.orm import joinedload
-from data_class.models import Product, Sale, Location, Stock
+from data_class.models import Product, Sale, Stock
 from data_access_layer.database import SessionLocal
 
 def add_sale(product_id, location, quantity):
