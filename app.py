@@ -5,6 +5,7 @@ from presentation_layer.location_view import store_selection
 from presentation_layer.product_view import add_product_view, get_products_view, search_product_view, update_product_view
 from presentation_layer.sale_view import add_sale_to_db, cancel_sale_from_db, get_sales_from_db
 from presentation_layer.stock_view import add_stock_view, get_stock_view, request_add_stock_view, get_all_stock_requests_view, fulfill_stock_request_view
+from presentation_layer.report_view import print_sales_report_csv, print_store_dashboard
 
 from service_layer.database import init_db
 from service_layer.location_repository import get_location_by_name
@@ -24,6 +25,8 @@ ACTIONS = {
     "11": ("Voir les requetes de reapprovisionnement", get_all_stock_requests_view),
     "12": ("Approuver les requetes de reapprovisionnement", fulfill_stock_request_view),
     "13": ("Voir stock centre logistique", get_stock_view),
+    "14": ("Generer un rapport des ventes", print_sales_report_csv),
+    "15": ("Tableau de bord des performances", print_store_dashboard),
     "Q": ("Quitter", None),
 }
 

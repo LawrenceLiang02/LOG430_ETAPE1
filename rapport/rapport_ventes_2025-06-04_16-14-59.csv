@@ -1,0 +1,22 @@
+Rapport consolidé des ventes
+Date de génération,2025-06-04 16:14:59
+
+Ventes par magasin
+Magasin,Total ($)
+Magasin 1,10.00
+Magasin 2,15.00
+Magasin 3,22.50
+
+Top 5 produits les plus vendus
+Produit,Quantité totale
+Raisin,25
+Pomme,10
+
+Stock restant par magasin
+Magasin,Produit,Quantité
+Centre logistique,Pomme,50
+Centre logistique,Raisin,200
+Magasin 1,Pomme,90
+Magasin 1,Raisin,100
+Magasin 2,Raisin,90
+Magasin 3,Raisin,85
