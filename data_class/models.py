@@ -58,3 +58,21 @@ class Location(Base):
 
     def __repr__(self):
         return f"<Location(id={self.id}, name='{self.name}')>"
+
+class StockRequest(Base):
+    """Represents a request to replenish stock at a location"""
+    __tablename__ = 'stock_requests'
+
+    id = Column(Integer, primary_key=True)
+    location_id = Column(Integer, ForeignKey('locations.id'), nullable=False)
+    product_id = Column(Integer, ForeignKey('products.id'), nullable=False)
+    quantity = Column(Integer, nullable=False)
+
+    location = relationship("Location")
+    product = relationship("Product")
+
+    def __repr__(self):
+        return (
+            f"<StockRequest(id={self.id}, location={self.location.name}, "
+            f"product={self.product.name}, quantity={self.quantity})>"
+        )

@@ -1,7 +1,8 @@
 """Stock module for the data access layer"""
+from sqlalchemy import func
 from sqlalchemy.orm import joinedload
 from service_layer.database import SessionLocal
-from data_class.models import Location, Product, Stock
+from data_class.models import Location, Product, Stock, StockRequest
 
 def add_stock(product_id, store, quantity):
     """
@@ -90,3 +91,82 @@ def get_stock(location):
         return stocks
     finally:
         session.close()
+
+def create_stock_request(location_id, product_id, quantity):
+    """Create and save a stock request in the database"""
+    try:
+        session = SessionLocal()
+        request = StockRequest(
+            location_id=location_id,
+            product_id=product_id,
+            quantity=quantity
+        )
+        session.add(request)
+        session.commit()
+        session.close()
+        return True
+    except Exception as e:
+        print(f"Erreur: {e}")
+        return False
+
+def get_all_stock_requests():
+    """Retourne toutes les demandes de stock avec leurs relations chargées"""
+    session = SessionLocal()
+    requests = session.query(StockRequest).options(
+        joinedload(StockRequest.product),
+        joinedload(StockRequest.location)
+    ).all()
+    session.close()
+    return requests
+
+def fulfill_stock_request(request_id):
+    """Method to fulfill stock request"""
+    session = SessionLocal()
+
+    request = session.query(StockRequest).options(
+        joinedload(StockRequest.product),
+        joinedload(StockRequest.location)
+    ).get(request_id)
+
+    if not request:
+        session.close()
+        return False, "Demande introuvable."
+
+    product = request.product
+    destination = request.location
+
+    centre = session.query(Location).filter(func.lower(Location.name) == "centre logistique").first()
+    if not centre:
+        session.close()
+        return False, "Centre Logistique introuvable."
+
+    source_stock = session.query(Stock).filter_by(
+        location_id=centre.id, product_id=product.id).first()
+
+    if not source_stock or source_stock.quantity < request.quantity:
+        session.close()
+        return False, "Stock insuffisant au Centre Logistique."
+
+    source_stock.quantity -= request.quantity
+
+    dest_stock = session.query(Stock).filter_by(
+        location_id=destination.id, product_id=product.id).first()
+    if dest_stock:
+        dest_stock.quantity += request.quantity
+    else:
+        dest_stock = Stock(
+            location_id=destination.id,
+            product_id=product.id,
+            quantity=request.quantity
+        )
+        session.add(dest_stock)
+
+    product_name = product.name
+    destination_name = destination.name
+    qty = request.quantity
+
+    session.delete(request)
+    session.commit()
+    session.close()
+
+    return True, f"{qty} unités de {product_name} envoyées à {destination_name}."

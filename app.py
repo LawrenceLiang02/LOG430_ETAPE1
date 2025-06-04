@@ -2,44 +2,36 @@
 
 import argparse
 from presentation_layer.location_view import store_selection
-from presentation_layer.product_view import add_product_to_db, get_products_from_db, search_product_in_db, update_product_in_db
+from presentation_layer.product_view import add_product_view, get_products_view, search_product_view, update_product_view
 from presentation_layer.sale_view import add_sale_to_db, cancel_sale_from_db, get_sales_from_db
-from presentation_layer.stock_view import add_stock_to_db, get_stock_from_db
+from presentation_layer.stock_view import add_stock_view, get_stock_view, request_add_stock_view, get_all_stock_requests_view, fulfill_stock_request_view
 
 from service_layer.database import init_db
+from service_layer.location_repository import get_location_by_name
 
 
 ACTIONS = {
-    "1": ("Voir la liste des produits", get_products_from_db),
-    "2": ("Ajouter un produit", add_product_to_db),
-    "3": ("Chercher un produit", search_product_in_db),
+    "1": ("Voir la liste des produits", get_products_view),
+    "2": ("Ajouter un produit", add_product_view),
+    "3": ("Chercher un produit", search_product_view),
     "4": ("Enregistrer une vente", add_sale_to_db),
     "5": ("Voir la liste des ventes", get_sales_from_db),
     "6": ("Faire un retour", cancel_sale_from_db),
-    "7": ("Add stock", add_stock_to_db),
-    "8": ("Voir stock", get_stock_from_db),
+    "7": ("Add stock", add_stock_view),
+    "8": ("Voir stock", get_stock_view),
+    "9": ("Modifier un produit", update_product_view),
+    "10": ("Demande de reapprovisionnement", request_add_stock_view),
+    "11": ("Voir les requetes de reapprovisionnement", get_all_stock_requests_view),
+    "12": ("Approuver les requetes de reapprovisionnement", fulfill_stock_request_view),
+    "13": ("Voir stock centre logistique", get_stock_view),
     "Q": ("Quitter", None),
-    "9": ("Modifier un produit", update_product_in_db),
 }
 
 ROLE_PERMISSIONS = {
     "Maison mère": list(ACTIONS.keys()),
-    "Centre Logistique": ["1", "2", "3", "7", "8", "Q"],
-    "Magasin": ["1", "3", "4", "5", "6", "7", "8", "Q"],
+    "Centre Logistique": ["1", "2", "3", "7", "8", "11", "12", "Q"],
+    "Magasin": ["1", "3", "4", "5", "6", "8", "10", "13", "Q"],
 }
-
-def print_action_options():
-    """Method to print out the menu options"""
-    print("\n=== Menu ===")
-    print("1: Voir la liste des produits")
-    print("2: Ajouter un produit")
-    print("3: Chercher un produit")
-    print("4: Enregistrer une vente")
-    print("5: Voir la liste des ventes")
-    print("6: Faire un retour")
-    print("7: Add stock")
-    print("8: Voir stock")
-    print("Q: Quitter")
 
 def run_cli():
     """Main method of the console app."""
@@ -77,8 +69,10 @@ def run_cli():
             is_done = True
         else:
             _, action_fn = ACTIONS[choix]
-            if choix in ["4", "5", "6", "7", "8"]:
+            if choix in ["4", "5", "6", "7", "8", "10"]:
                 action_fn(location)
+            elif choix in ["13"]:
+                action_fn(get_location_by_name("Centre logistique"))
             else:
                 action_fn()
 

@@ -2,14 +2,14 @@
 from service_layer.product_repository import add_product, get_products, search_product_by, update_product
 
 
-def get_products_from_db():
+def get_products_view():
     """Method that calls the service layer and formats the products"""
     products = get_products()
     print("=====Les Produits=====")
     for product in products:
         print(f"Nom: {product.name}, Prix: {product.price:.2f}$, Description: {product.description}")
 
-def add_product_to_db():
+def add_product_view():
     """Prompts user for product info and adds it to the database"""
     print("\n=== Ajouter un produit ===")
     name = input("Nom du produit: ").strip()
@@ -23,7 +23,7 @@ def add_product_to_db():
 
     add_product(name, price, description)
 
-def search_product_in_db():
+def search_product_view():
     """Method to display the searching methods in database"""
     print("\n=== Recherche de produit ===")
     print("1: Par identifiant")
@@ -50,7 +50,7 @@ def search_product_in_db():
     except ValueError as e:
         print(f"Erreur : {e}")
 
-def update_product_in_db():
+def update_product_view():
     """Method to update product in db"""
     print("=== Modifier un produit ===")
 
