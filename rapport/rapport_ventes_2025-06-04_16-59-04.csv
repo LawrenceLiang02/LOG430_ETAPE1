@@ -1,0 +1,17 @@
+Rapport consolidé des ventes
+Date de génération,2025-06-04 16:59:04
+
+Ventes par magasin
+Magasin,Total ($)
+Store 1,15.00
+Store 2,4.00
+
+Top 5 produits les plus vendus
+Produit,Quantité totale
+Apple,10
+Banana,5
+
+Stock restant par magasin
+Magasin,Produit,Quantité
+Store 1,Apple,3
+Store 2,Banana,120
