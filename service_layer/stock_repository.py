@@ -1,6 +1,6 @@
 """Stock module for the data access layer"""
 from sqlalchemy.orm import joinedload
-from data_access_layer.database import SessionLocal
+from service_layer.database import SessionLocal
 from data_class.models import Location, Product, Stock
 
 def add_stock(product_id, store, quantity):

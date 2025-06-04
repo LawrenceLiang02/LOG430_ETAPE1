@@ -1,5 +1,5 @@
 """Location repository module for the data access layer"""
-from data_access_layer.database import SessionLocal
+from service_layer.database import SessionLocal
 from data_class.models import Location
 
 
