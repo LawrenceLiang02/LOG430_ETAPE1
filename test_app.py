@@ -1,9 +1,9 @@
 # pylint: disable=redefined-outer-name
 """Tests"""
-import pytest
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from data_class.models import Base, Product, Sale
+# import pytest
+# from sqlalchemy import create_engine
+# from sqlalchemy.orm import sessionmaker
+# from data_class.models import Base, Product, Sale
 
 
 TEST_DATABASE_URL = "sqlite:///:memory:"
