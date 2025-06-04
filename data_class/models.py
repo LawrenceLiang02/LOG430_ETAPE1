@@ -18,11 +18,12 @@ class Product(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     price = Column(Float, nullable=False)
+    description = Column(String, nullable=True)
 
     stocks = relationship("Stock", back_populates="product", cascade="all, delete-orphan")
 
     def __repr__(self):
-        return f"<Product(id={self.id}, name='{self.name}', price={self.price})>"
+        return f"<Product(id={self.id}, name='{self.name}', price={self.price}), description={self.description}>"
 
 class Stock(Base):
     """stock model"""

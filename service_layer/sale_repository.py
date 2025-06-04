@@ -49,7 +49,7 @@ def get_sales_by_location(location):
         session.close()
 
 def get_all_sales():
-    """Récupère toutes les ventes avec produit et magasin préchargés."""
+    """Get all sales from everywhere"""
     session = SessionLocal()
     try:
         return session.query(Sale).options(
