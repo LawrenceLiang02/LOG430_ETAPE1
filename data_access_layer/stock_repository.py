@@ -16,10 +16,6 @@ def add_stock(product_id, store, quantity):
             print(f"Produit avec ID {product_id} introuvable.")
             return False
 
-        if not store or not store.id:
-            print("Magasin invalide.")
-            return False
-
         if store.name.lower() == "centre logistique":
             stock = session.query(Stock).filter_by(
                 product_id=product.id,

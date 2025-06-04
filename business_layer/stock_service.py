@@ -35,7 +35,7 @@ def add_stock_to_db(location):
             print("Veuillez entrer une quantité valide.")
 
     add_stock(selected_product.id, location, quantity)
-  
+
 def get_stock_from_db(location):
     """Get stock from db"""
     stock_list = get_stock(location)

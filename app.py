@@ -4,7 +4,7 @@ from business_layer.location_service import store_selection
 from business_layer.product_service import add_product_to_db, get_products_from_db, search_product_in_db
 from business_layer.sale_service import add_sale_to_db, cancel_sale_from_db, get_sales_from_db
 from business_layer.stock_service import add_stock_to_db, get_stock_from_db
-    
+
 from data_access_layer.database import init_db
 
 def print_action_options():

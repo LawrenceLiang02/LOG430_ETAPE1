@@ -21,7 +21,7 @@ def add_sale(product_id, location, quantity):
         if not stock or stock.quantity < quantity:
             print(f"Stock insuffisant pour le produit '{product.name}' dans le magasin '{location.name}'.")
             return
-        
+
         stock.quantity -= quantity
 
         sale = Sale(product=product, location_id=location.id, quantity=quantity)
