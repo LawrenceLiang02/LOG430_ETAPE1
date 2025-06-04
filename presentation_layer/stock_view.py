@@ -1,6 +1,6 @@
 """Stock service module for the business layer"""
-from data_access_layer.product_repository import get_products
-from data_access_layer.stock_repository import add_stock, get_stock
+from service_layer.product_repository import get_products
+from service_layer.stock_repository import add_stock, get_stock
 
 
 def add_stock_to_db(location):

@@ -1,6 +1,6 @@
 """Sale service module for the business layer"""
-from data_access_layer.sale_repository import add_sale, cancel_sale, get_sales_by_location
-from data_access_layer.stock_repository import get_stock
+from service_layer.sale_repository import add_sale, cancel_sale, get_sales_by_location
+from service_layer.stock_repository import get_stock
 
 
 def get_sales_from_db(location):

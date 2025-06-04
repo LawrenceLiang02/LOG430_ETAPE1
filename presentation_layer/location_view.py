@@ -1,5 +1,5 @@
 """Location service module for the business layer"""
-from data_access_layer.location_repository import get_all_locations
+from service_layer.location_repository import get_all_locations
 
 
 def store_selection():

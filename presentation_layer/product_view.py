@@ -1,5 +1,5 @@
 """Product service module for the business layer"""
-from data_access_layer.product_repository import add_product, get_products, search_product_by
+from service_layer.product_repository import add_product, get_products, search_product_by
 
 
 def get_products_from_db():

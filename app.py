@@ -5,7 +5,7 @@ from presentation_layer.product_view import add_product_to_db, get_products_from
 from presentation_layer.sale_view import add_sale_to_db, cancel_sale_from_db, get_sales_from_db
 from presentation_layer.stock_view import add_stock_to_db, get_stock_from_db
 
-from data_access_layer.database import init_db
+from service_layer.database import init_db
 
 def print_action_options():
     """Method to print out the menu options"""
