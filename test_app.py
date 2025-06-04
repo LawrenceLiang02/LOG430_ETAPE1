@@ -5,7 +5,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from data_class.models import Base, Product, Sale
 
-from service_layer import store_service
+from service_layer import sale_service
 
 TEST_DATABASE_URL = "sqlite:///:memory:"
 
@@ -17,7 +17,7 @@ def db_session():
     Base.metadata.create_all(bind=engine)
     session = testing_session_local()
 
-    store_service.SessionLocal = lambda: session
+    sale_service.SessionLocal = lambda: session
 
     yield session
 
@@ -26,7 +26,7 @@ def db_session():
 
 def test_add_product(db_session):
     """Test to add product"""
-    store_service.add_product("Banane", 1.99, 50)
+    sale_service.add_product("Banane", 1.99, 50)
     products = db_session.query(Product).all()
 
     assert len(products) == 1
@@ -38,7 +38,7 @@ def test_add_sale_success(db_session):
     db_session.add(product)
     db_session.commit()
 
-    store_service.add_sale(product.id, 3)
+    sale_service.add_sale(product.id, 3)
 
     updated_product = db_session.get(Product, product.id)
     sales = db_session.query(Sale).all()
@@ -53,7 +53,7 @@ def test_add_sale_insufficient_stock(db_session, capsys):
     db_session.add(product)
     db_session.commit()
 
-    store_service.add_sale(product.id, 5)
+    sale_service.add_sale(product.id, 5)
     captured = capsys.readouterr()
 
     assert "Stock insuffisant" in captured.out
@@ -70,7 +70,7 @@ def test_cancel_sale(db_session):
     product.quantity -= 2
     db_session.commit()
 
-    store_service.cancel_sale(sale.id)
+    sale_service.cancel_sale(sale.id)
 
     updated_product = db_session.get(Product, product.id)
     assert updated_product.quantity == 10

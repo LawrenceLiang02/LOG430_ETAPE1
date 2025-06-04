@@ -1,17 +1,14 @@
 """This is the main module of the application"""
 
-from service_layer.store_service import(get_sales_by_location,
-                                        get_stock,
-                                        add_stock,
-                                        get_all_locations,
-                                        get_products,
-                                        add_product,
+from service_layer.location_service import get_all_locations
+from service_layer.product_service import add_product, get_products, search_product_by
+from service_layer.sale_service import(get_sales_by_location,
                                         add_sale,
-                                        search_product_by,
                                         get_all_sales,
                                         cancel_sale)
     
 from data_access_layer.database import init_db
+from service_layer.stock_service import add_stock, get_stock
 
 def print_action_options():
     """Method to print out the menu options"""
