@@ -1,5 +1,6 @@
 """This is the main module of the application"""
 
+import argparse
 from presentation_layer.location_view import store_selection
 from presentation_layer.product_view import add_product_to_db, get_products_from_db, search_product_in_db
 from presentation_layer.sale_view import add_sale_to_db, cancel_sale_from_db, get_sales_from_db
@@ -20,7 +21,7 @@ def print_action_options():
     print("8: Voir stock")
     print("Q: Quitter")
 
-def main():
+def run_cli():
     """Main method of the console app."""
     init_db()
     print("Bienvenue au magasin")
@@ -57,4 +58,17 @@ def main():
                 print("Choix invalide.")
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="Choose mode: CLI or API")
+    parser.add_argument(
+        "--mode",
+        choices=["cli", "api"],
+        default="cli",
+        help="Select the mode to run: cli or api"
+    )
+
+    args = parser.parse_args()
+
+    if args.mode == "cli":
+        run_cli()
+    elif args.mode == "api":
+        run_cli()
