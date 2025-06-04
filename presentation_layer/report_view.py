@@ -1,3 +1,4 @@
+"""Report view module to print the view of report in console"""
 from service_layer.report_service import generate_sales_report_csv, get_store_performance_metrics
 
 def print_sales_report_csv():
