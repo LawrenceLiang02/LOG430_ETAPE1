@@ -26,6 +26,6 @@ def init_db():
         ]
         session.add_all(default_locations)
         session.commit()
-        print("✅ 5 default locations added")
+        print("5 default locations added")
 
     session.close()
