@@ -7,5 +7,4 @@ Magasin --> CentreLogistique : Demande de stock
 CentreLogistique --> Magasin : Approvisionnement
 Magasin --> MaisonMere : Données de ventes
 MaisonMere --> Magasin : Mises à jour produits
-MaisonMere --> CentreLogistique : Suivi KPIs
 @enduml
