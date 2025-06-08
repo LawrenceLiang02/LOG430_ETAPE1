@@ -182,4 +182,4 @@ cython_debug/
 
 .github/
 # /store.db
-/rapport/*
+rapport/*

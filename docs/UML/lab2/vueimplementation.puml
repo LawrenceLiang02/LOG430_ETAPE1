@@ -1,0 +1,42 @@
+@startuml vue_implementaiton
+package "product" {
+  class ProductView
+  class ProductService
+  class ProductRepository
+  ProductView --> ProductService
+  ProductService --> ProductRepository
+}
+
+package "sale" {
+  class SaleView
+  class SaleService
+  class SaleRepository
+  SaleView --> SaleService
+  SaleService --> SaleRepository
+}
+
+package "stock" {
+  class StockView
+  class StockService
+  class StockRepository
+  StockView --> StockService
+  StockService --> StockRepository
+}
+
+package "location" {
+  class LocationView
+  class LocationService
+  class LocationRepository
+  LocationView --> LocationService
+  LocationService --> LocationRepository
+}
+
+package "report" {
+  class ReportView
+  class ReportService
+  class ReportRerepository
+  ReportView --> ReportService
+  ReportService --> ReportRerepository
+}
+
+@enduml

@@ -1,0 +1,59 @@
+@startuml vue_cas_utilisation
+left to right direction
+
+actor Maison_mere
+actor Centre_Logistique
+actor Magasin
+
+rectangle "Cas d'utilisation" {
+  usecase "Voir la liste des produits" as UC1
+  usecase "Ajouter un produit" as UC2
+  usecase "Chercher un produit" as UC3
+  usecase "Enregistrer une vente" as UC4
+  usecase "Voir la liste des ventes" as UC5
+  usecase "Faire un retour" as UC6
+  usecase "Add stock" as UC7
+  usecase "Voir stock" as UC8
+  usecase "Modifier un produit" as UC9
+  usecase "Demande de reapprovisionnement" as UC10
+  usecase "Voir les requetes de reapprovisionnement" as UC11
+  usecase "Approuver les requetes de reapprovisionnement" as UC12
+  usecase "Voir stock centre logistique" as UC13
+  usecase "Générer un rapport des ventes" as UC14
+  usecase "Tableau de bord des performances" as UC15
+}
+
+Maison_mere --> UC1
+Maison_mere --> UC2
+Maison_mere --> UC3
+Maison_mere --> UC4
+Maison_mere --> UC5
+Maison_mere --> UC6
+Maison_mere --> UC7
+Maison_mere --> UC8
+Maison_mere --> UC9
+Maison_mere --> UC10
+Maison_mere --> UC11
+Maison_mere --> UC12
+Maison_mere --> UC13
+Maison_mere --> UC14
+Maison_mere --> UC15
+
+Centre_Logistique --> UC1
+Centre_Logistique --> UC2
+Centre_Logistique --> UC3
+Centre_Logistique --> UC7
+Centre_Logistique --> UC8
+Centre_Logistique --> UC11
+Centre_Logistique --> UC12
+Centre_Logistique --> UC13
+
+Magasin --> UC1
+Magasin --> UC3
+Magasin --> UC4
+Magasin --> UC5
+Magasin --> UC6
+Magasin --> UC8
+Magasin --> UC10
+Magasin --> UC15
+@enduml

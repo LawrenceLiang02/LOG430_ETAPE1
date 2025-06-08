@@ -1,0 +1,14 @@
+@startuml vue_deploiement
+node "VM Ubuntu" {
+  node "App Python" {
+    component "CLI"
+    component "Service Layer"
+    component "Data Models"
+    file "SQLite"
+  }
+}
+
+"CLI" --> "Service Layer"
+"Service Layer" --> "Data Models"
+"Service Layer" --> "SQLite"
+@enduml

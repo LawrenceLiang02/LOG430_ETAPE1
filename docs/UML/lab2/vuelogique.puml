@@ -1,0 +1,17 @@
+@startuml vuelogique
+package "Domaine" {
+  class Product
+  class Stock
+  class Sale
+  class StockRequest
+  class Location
+}
+
+Product --> Stock
+Product --> Sale
+StockRequest --> Product
+StockRequest --> Location
+Sale --> Product
+Sale --> Location
+Stock --> Location
+@enduml
