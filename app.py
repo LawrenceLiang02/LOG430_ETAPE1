@@ -50,7 +50,7 @@ def run_cli():
         if not location:
             print(f"Emplacement '{location_name}' introuvable. Passage à la sélection manuelle.")
     else:
-        print("🔎 Aucune variable ROLE/LOCATION détectée. Passage à la sélection manuelle.")
+        print("Aucune variable ROLE/LOCATION détectée. Passage à la sélection manuelle.")
 
     if not location:
         location = store_selection()
