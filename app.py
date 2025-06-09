@@ -36,6 +36,7 @@ ROLE_PERMISSIONS = {
     "Magasin": ["1", "3", "4", "5", "6", "8", "10", "13", "Q"],
 }
 
+# pylint: disable=too-many-branches
 def run_cli():
     """Main method of the console app."""
     init_db()
