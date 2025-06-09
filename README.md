@@ -63,21 +63,21 @@ Non fonctionnels
 
 ## Diagrammes
 
-### Diagramme de classe (vue logique)
+### Vue Logiqe
 
 ![diagramme de classe](./docs/UML/lab1/classe.png)
 
-### Diagramme de séquence (vue des processus)
+### Vue des processus
 
-### Diagramme de deploiement (vue de déploiement)
+### Vue de deploiement
 
 ![diagramme de deploiement](./docs/UML/lab1/deploiement.png)
 
-### Diagramme d'organisation des modules (vue d'implémentation)
+### Vue d'implémentation
 
 ![diagramme de cas d'utilisation](./docs/UML/lab1/modules.png)
 
-### Diagramme des cas d'utilisations (vue des cas d'utilsiation)
+### Vue de cas d'utilisation
 
 ![diagramme de cas d'utilisation](./docs/UML/lab1/cas_utilisation.png)
 
@@ -106,7 +106,7 @@ Terminal: `pytest`
 
 ## CI/CD Pipeline:
 
-Le pipeline CI/CD vérifie d'abord le système de lint, spécifiquement PyLint. Ensuite, il exécute les tests dans `test_app.py`, puis il buildera le docker-compose. 
+Le pipeline CI/CD vérifie d'abord le système de lint, spécifiquement PyLint. Ensuite, il exécute les tests dans `test_app.py`, puis il buildera le docker-compose et soumettrera l'image sur docker hub.
 
 ## Mettre à jour les requirements.txt:
 

@@ -1,5 +1,5 @@
 """This is the main module of the application"""
-
+import os
 import argparse
 from presentation_layer.location_view import store_selection
 from presentation_layer.product_view import add_product_view, get_products_view, search_product_view, update_product_view
@@ -39,23 +39,38 @@ ROLE_PERMISSIONS = {
 def run_cli():
     """Main method of the console app."""
     init_db()
-    print("Bienvenue au magasin")
 
-    is_done = False
-    location = store_selection()
+    role = os.getenv("ROLE")
+    location_name = os.getenv("LOCATION")
+    location = None
 
-    if "maison mère" in location.name.lower():
-        role = "Maison mère"
-    elif "centre logistique" in location.name.lower():
-        role = "Centre Logistique"
-    elif "magasin" in location.name.lower():
-        role = "Magasin"
+    if role and location_name:
+        location = get_location_by_name(location_name)
+        if not location:
+            print(f"Emplacement '{location_name}' introuvable. Passage à la sélection manuelle.")
     else:
-        print("Emplacement inconnu. Aucun rôle attribué.")
+        print("🔎 Aucune variable ROLE/LOCATION détectée. Passage à la sélection manuelle.")
+
+    if not location:
+        location = store_selection()
+        if "maison mère" in location.name.lower():
+            role = "Maison mère"
+        elif "centre logistique" in location.name.lower():
+            role = "Centre Logistique"
+        elif "magasin" in location.name.lower():
+            role = "Magasin"
+        else:
+            print("Emplacement inconnu. Aucun rôle attribué.")
+            return
+
+    allowed_actions = ROLE_PERMISSIONS.get(role)
+    if not allowed_actions:
+        print(f"Rôle '{role}' non reconnu.")
         return
 
-    allowed_actions = ROLE_PERMISSIONS[role]
+    print(f"Bienvenue ({role}) dans {location.name}")
 
+    is_done = False
     while not is_done:
         print("\n=== Menu ===")
         for key in allowed_actions:
@@ -74,8 +89,8 @@ def run_cli():
             _, action_fn = ACTIONS[choix]
             if choix in ["4", "5", "6", "7", "8", "10"]:
                 action_fn(location)
-            elif choix in ["13"]:
-                action_fn(get_location_by_name("Centre logistique"))
+            elif choix == "13":
+                action_fn(get_location_by_name("Centre Logistique"))
             else:
                 action_fn()
 

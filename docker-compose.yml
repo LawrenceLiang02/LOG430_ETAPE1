@@ -1,7 +1,47 @@
 version: '3.8'
 
 services:
-  app:
+  magasin1:
     build: .
     stdin_open: true
     tty: true
+    environment:
+      - ROLE=Magasin
+      - LOCATION=Magasin 1
+    command: python app.py
+
+  magasin2:
+    build: .
+    stdin_open: true
+    tty: true
+    environment:
+      - ROLE=Magasin
+      - LOCATION=Magasin 2
+    command: python app.py
+
+  magasin3:
+    build: .
+    stdin_open: true
+    tty: true
+    environment:
+      - ROLE=Magasin
+      - LOCATION=Magasin 3
+    command: python app.py
+
+  centre_logistique:
+    build: .
+    stdin_open: true
+    tty: true
+    environment:
+      - ROLE=Centre Logistique
+      - LOCATION=Centre Logistique
+    command: python app.py
+
+  maison_mere:
+    build: .
+    stdin_open: true
+    tty: true
+    environment:
+      - ROLE=Maison mère
+      - LOCATION=Maison mère
+    command: python app.py
