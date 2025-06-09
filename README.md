@@ -22,15 +22,19 @@ Les piles technologiques utilisé sont:
 
 Ce projet a une architecture 2-tier.
 
-## L'architecture (laboratoire 1)
+## L'architecture
 
+### Laboratoire 1:
 Ceci est un système à 2 couches puisque la logique de la couche de présentation et la couche de donnée sont séparées. 
 
 À travers le CLI, on communique avec la base de données SQLite à travers le système de fichier.
 
 ![diagramme d'architecture](./docs/UML/lab1/architecture.png)
 
-## Analyse des besoins (laboratoire 1)
+### Laboratoire 2:
+L'architecture du logiciel a évolué dans un architecture inspiré des domaines du DDD. Ce qui veut dire, c'est modularisé suivant le patron de MVC. Il y a des modules pour le stock, les produits, les ventes, les lieux, et la génération des rapports.
+
+## Analyse des besoins
 
 Fonctionnels:
 - Le système doit permettre l'ajout d'un produit
@@ -38,6 +42,12 @@ Fonctionnels:
 - Le système doit permettre d'enregistrer une vente
 - Le système doit permettre l'annulation d'une vente
 - Le système doit permettre la recherche d'un produit
+- Le système doit être en mesure de générer un rapport CSV contenant les ventes par magasin, produits les plus vendus, et niveau de stock acutels.
+- Le système doit permettre la consultation de niveau de stock du centre logistique par un magasin.
+- Le système doit permettre à une personne du maison mère de visualiser les performances des magasins tel que les alertes de rupture de stock ou de surstock, les tendances hebdomadaire et les ventes par magasin.
+- Le système doit permettre la modification des produits uniquement par la maison mère.
+- Le système doit permettre au centre logistique d'approuver un réapprovisionnement.
+- Le système doit permettre à un magasin de faire une demande de réapprovisionnement
 
 Non fonctionnels
 - Le système doit être dans une architecture à 2 couches
@@ -46,14 +56,18 @@ Non fonctionnels
 - Le système doit assurer la cohérence des données lors des ventes et annulations.
 - Le système doit avoir une couverture de bases par des tests unitaires avec PyTest.
 - Le système doit pouvoir tourner dans un contenur Docker, avec une base SQLite.
+- Le code doit être organisé par domaines (DDD inspiré) pour permettre l'évolutivité.
+- Le système doit avoir des tests unitaires et tests d'intégration.
+- Le système doit être contaeneurisé via Docker Compose.
 
 ## Justification des décisions d'architecture. (ADR)
 
 | # | Titre | Lien |
 | - | - | - |
-| 1 | Choix de la plateforme | [ADR 1](docs/ADR/ADR1.md)|
-| 2 | Séparation des responsabilités entre présentation, logique et persistance | [ADR 2](docs/ADR/ADR2.md)|
-
+| 1 | Choix de la plateforme (labo 1) | [ADR 1](docs/ADR/ADR1.md)|
+| 2 | Séparation des responsabilités entre présentation, logique et persistance (labo 1) | [ADR 2](docs/ADR/ADR2.md)|
+| 3 | Choix d’une architecture modulaire inspirée de DDD (labo 2) | [ADR 3](docs/ADR/ADR3.md) |
+| 4 | Conteneurisation avec Docker Compose pour la simulation multi-sites (labo 2) | [ADR 4](docs/ADR/ADR4.md) |
 
 ## Choix technologique
 
