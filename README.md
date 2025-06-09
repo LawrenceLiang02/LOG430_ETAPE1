@@ -22,7 +22,7 @@ Les piles technologiques utilisé sont:
 
 Ce projet a une architecture 2-tier.
 
-## L'architecture
+## L'architecture (laboratoire 1)
 
 Ceci est un système à 2 couches puisque la logique de la couche de présentation et la couche de donnée sont séparées. 
 
@@ -30,7 +30,7 @@ Ceci est un système à 2 couches puisque la logique de la couche de présentati
 
 ![diagramme d'architecture](./docs/UML/lab1/architecture.png)
 
-## Analyse des besoins
+## Analyse des besoins (laboratoire 1)
 
 Fonctionnels:
 - Le système doit permettre l'ajout d'un produit
@@ -47,7 +47,7 @@ Non fonctionnels
 - Le système doit avoir une couverture de bases par des tests unitaires avec PyTest.
 - Le système doit pouvoir tourner dans un contenur Docker, avec une base SQLite.
 
-## Justification des décisions d'architecture.
+## Justification des décisions d'architecture. (ADR)
 
 | # | Titre | Lien |
 | - | - | - |
@@ -63,25 +63,27 @@ Non fonctionnels
 
 ## Diagrammes
 
-### Vue Logiqe
+### Vue Logique
 
-![diagramme de classe](./docs/UML/lab1/classe.png)
+![diagramme de classe](./docs/UML/lab2/logique.png)
 
 ### Vue des processus
 
+![diagramme processus](./docs/UML/lab2/process.png)
+
 ### Vue de deploiement
 
-![diagramme de deploiement](./docs/UML/lab1/deploiement.png)
+![diagramme de deploiement](./docs/UML/lab2/deploiement.png)
 
 ### Vue d'implémentation
 
-![diagramme de cas d'utilisation](./docs/UML/lab1/modules.png)
+![diagramme d'implémentation](./docs/UML/lab2/implementation.png)
 
 ### Vue de cas d'utilisation
 
-![diagramme de cas d'utilisation](./docs/UML/lab1/cas_utilisation.png)
+![diagramme de cas d'utilisation](./docs/UML/lab2/casutilisation.png)
 
-## Instruction d'installation et d'execution
+## Instruction d'installation et d'execution pour le developpement
 
 ### Cloner le projet
 Git bash: `git clone https://github.com/LawrenceLiang02/LOG430_ETAPE1.git`
@@ -96,13 +98,75 @@ Terminal: `pip install -r requirements.txt`
 `docker-compose build`
 `docker-compose up`
 
-### Executer l'ap
+### Executer l'app
 
 Terminal: `python app.py`
 
 ### Executer les tests unitaires manuellement
 
 Terminal: `pytest`
+
+## Instruction pour l'environnement de production
+
+Dans la machine virtuelle, voici des commandes à utiliser.
+
+### Télécharger la plus nouvelle version sur docker hub
+
+`docker pull liangtzai/mon-api-flask:latest`
+
+### Assurez vous d'avoir un `docker-compose.yml`
+
+Dans ce fichier docker-compose.yml, vous pouvez créer autant d'instance de magasin que vous voulez. Voici un example.
+
+```
+version: '3.8'
+
+services:
+  maison_mere:
+    image: liangtzai/mon-api-flask:latest
+    stdin_open: true
+    tty: true
+    environment:
+      - ROLE=Maison mère
+      - LOCATION=Maison mère
+    volumes:
+      - shared_db:/app/data
+
+  centre_logistique:
+    image: liangtzai/mon-api-flask:latest
+    stdin_open: true
+    tty: true
+    environment:
+      - ROLE=Centre Logistique
+      - LOCATION=Centre Logistique
+    volumes:
+      - shared_db:/app/data
+
+  magasin1:
+    image: liangtzai/mon-api-flask:latest
+    stdin_open: true
+    tty: true
+    environment:
+      - ROLE=Magasin
+      - LOCATION=Magasin 1
+    volumes:
+      - shared_db:/app/data
+
+volumes:
+  shared_db:
+
+```
+
+### Commandes docker utiles:
+Voir les images: `docker images`
+Voir les conteneurs: `docker ps`
+
+### Commande pour run le docker compose
+`docker compose up`
+
+### Commande pour connecter au CLI d'un magasin spécfique:
+1. Trouver l'ID du conteneur que tu cherche avec `docker ps`
+2. Connecter via la commande "attach": `docker attach <container_id>`
 
 ## CI/CD Pipeline:
 
@@ -111,3 +175,4 @@ Le pipeline CI/CD vérifie d'abord le système de lint, spécifiquement PyLint. 
 ## Mettre à jour les requirements.txt:
 
 `pip freeze > requirements.txt`
+

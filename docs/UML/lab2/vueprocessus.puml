@@ -3,8 +3,16 @@ actor Magasin
 actor CentreLogistique
 actor MaisonMere
 
-Magasin --> CentreLogistique : Demande de stock
-CentreLogistique --> Magasin : Approvisionnement
-Magasin --> MaisonMere : Données de ventes
-MaisonMere --> Magasin : Mises à jour produits
+Magasin -> CentreLogistique : Consulter stock
+Magasin -> CentreLogistique : Créer demande de réapprovisionnement
+
+CentreLogistique -> Magasin : Transfert de stock validé
+
+Magasin -> MaisonMere : Envoyer données de ventes
+MaisonMere -> MaisonMere : Génération du rapport (ventes, stocks, produits populaires)
+
+MaisonMere -> MaisonMere : Affichage du tableau de bord (KPI, tendances, alertes stock)
+
+MaisonMere -> Magasin : Synchronisation des infos produits mises à jour
+
 @enduml
