@@ -3,8 +3,8 @@ version: '3.8'
 services:
   magasin1:
     build: .
-    stdin_open: true
-    tty: true
+    volumes:
+      - shared-data:/app/data
     environment:
       - ROLE=Magasin
       - LOCATION=Magasin 1
@@ -12,8 +12,8 @@ services:
 
   magasin2:
     build: .
-    stdin_open: true
-    tty: true
+    volumes:
+      - shared-data:/app/data
     environment:
       - ROLE=Magasin
       - LOCATION=Magasin 2
@@ -21,8 +21,8 @@ services:
 
   magasin3:
     build: .
-    stdin_open: true
-    tty: true
+    volumes:
+      - shared-data:/app/data
     environment:
       - ROLE=Magasin
       - LOCATION=Magasin 3
@@ -30,8 +30,8 @@ services:
 
   centre_logistique:
     build: .
-    stdin_open: true
-    tty: true
+    volumes:
+      - shared-data:/app/data
     environment:
       - ROLE=Centre Logistique
       - LOCATION=Centre Logistique
@@ -39,9 +39,12 @@ services:
 
   maison_mere:
     build: .
-    stdin_open: true
-    tty: true
+    volumes:
+      - shared-data:/app/data
     environment:
       - ROLE=Maison mère
       - LOCATION=Maison mère
     command: python app.py
+
+volumes:
+  shared-data:
