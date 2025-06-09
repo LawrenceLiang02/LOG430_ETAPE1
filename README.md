@@ -20,8 +20,6 @@ Les piles technologiques utilisé sont:
 - SQLAlchemy en tant qu'ORM
 - SQLite pour la base de donnée
 
-Ce projet a une architecture 2-tier.
-
 ## L'architecture
 
 ### Laboratoire 1:
