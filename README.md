@@ -94,9 +94,9 @@ Terminal: `pip install -r requirements.txt`
 
 ### Build et executer avec Docker
 `docker-compose build`
-`docker-compose run --rm app`
+`docker-compose up`
 
-### Executer l'application localement
+### Executer l'ap
 
 Terminal: `python app.py`
 

@@ -3,6 +3,7 @@ version: '3.8'
 services:
   magasin1:
     build: .
+    stdin_open: true
     volumes:
       - shared-data:/app/data
     environment:
@@ -12,6 +13,7 @@ services:
 
   magasin2:
     build: .
+    stdin_open: true
     volumes:
       - shared-data:/app/data
     environment:
@@ -21,6 +23,7 @@ services:
 
   magasin3:
     build: .
+    stdin_open: true
     volumes:
       - shared-data:/app/data
     environment:
@@ -30,6 +33,7 @@ services:
 
   centre_logistique:
     build: .
+    stdin_open: true
     volumes:
       - shared-data:/app/data
     environment:
@@ -39,6 +43,7 @@ services:
 
   maison_mere:
     build: .
+    stdin_open: true
     volumes:
       - shared-data:/app/data
     environment:
