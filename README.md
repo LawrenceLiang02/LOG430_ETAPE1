@@ -30,7 +30,7 @@ Ceci est un système à 2 couches puisque la logique de la couche de présentati
 ![diagramme d'architecture](./docs/UML/lab1/architecture.png)
 
 ### Laboratoire 2:
-L'architecture du logiciel a évolué dans un architecture inspiré des domaines du DDD. Ce qui veut dire, c'est modularisé suivant le patron de MVC. Il y a des modules pour le stock, les produits, les ventes, les lieux, et la génération des rapports.
+L'architecture du logiciel a évolué dans un architecture inspiré des domaines du DDD. Ce qui veut dire, c'est modularisé suivant le patron de MVC. Le folder `présentation_layer` contient les **vues**, le `service_layer` contient les **controlleurs**, et le `data_class` contient les **modèles**. Il y a des modules pour le stock, les produits, les ventes, les lieux, et la génération des rapports.
 
 ## Analyse des besoins
 
