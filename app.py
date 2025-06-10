@@ -53,12 +53,12 @@ def home():
     """Test function"""
     return {"message": "API is running"}
 
-api = Api(app, title="Store Management API", version="1.0", doc="/docs")
+api = Api(app, title="Store Management API", version="1.0", doc="/api/docs")
 
-api.add_namespace(product_api, path="/products")
-api.add_namespace(location_api, path="/locations")
-api.add_namespace(sale_api, path="/sales")
-api.add_namespace(stock_api, path="/stocks")
+api.add_namespace(product_api, path="/api/products")
+api.add_namespace(location_api, path="/api/locations")
+api.add_namespace(sale_api, path="/api/sales")
+api.add_namespace(stock_api, path="/api/stocks")
 
 def run_flask():
     """Run flask simultaneously"""
