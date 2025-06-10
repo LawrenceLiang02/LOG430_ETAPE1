@@ -29,12 +29,12 @@ def add_sale(product_id, location, quantity):
         session.commit()
 
         print(f"Vente enregistrée chez {location.name} | {quantity} {product.name} x {product.price} = ${(product.price * quantity):.2f}")
-
     except Exception as e:
         session.rollback()
         print(f"Erreur lors de l'enregistrement de la vente: {e}")
     finally:
         session.close()
+    return True
 
 def get_sales_by_location(location):
     """Get sales from a location"""

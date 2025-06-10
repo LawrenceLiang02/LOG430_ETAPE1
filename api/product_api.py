@@ -1,0 +1,79 @@
+"""API for /products"""
+from flask_restx import Namespace, Resource, fields
+from flask import request
+from service_layer.product_repository import add_product, get_products, search_product_by, update_product
+
+api = Namespace("Products", description="Product operations")
+
+product_model = api.model("Product", {
+    "id": fields.Integer(readonly=True),
+    "name": fields.String(required=True),
+    "price": fields.Float(required=True),
+    "description": fields.String
+})
+
+@api.route("/")
+class ProductList(Resource):
+    """Product list class"""
+    @api.marshal_list_with(product_model)
+    def get(self):
+        """List all products"""
+        return get_products()
+
+    @api.expect(product_model)
+    def post(self):
+        """Create a new product"""
+        data = request.json
+        name = data.get("name")
+        description = data.get("description")
+        price = data.get("price")
+
+        if not name or not isinstance(price, (int, float)):
+            api.abort(400, "Nom et prix valides requis.")
+
+        add_product(name, price, description)
+        return {"message": "Produit ajouté avec succès."}, 201
+
+
+@api.route("/search")
+class ProductSearch(Resource):
+    """Product search API"""
+    def get(self):
+        """Search for products by ID or name"""
+        search_type = request.args.get("type")
+        keyword = request.args.get("keyword")
+
+        if search_type not in {"id", "name"} or not keyword:
+            api.abort(400, "Paramètres 'type' (id|name) et 'keyword' requis.")
+
+        try:
+            results = search_product_by(search_type, keyword)
+            if not results:
+                return {"message": "Aucun produit trouvé."}, 404
+            return [
+                {
+                    "id": p.id,
+                    "name": p.name,
+                    "price": p.price,
+                    "description": p.description
+                }
+                for p in results
+            ]
+        except ValueError as e:
+            api.abort(400, str(e))
+
+
+@api.route("/<int:product_id>")
+class ProductUpdate(Resource):
+    """Product updatate API"""
+    def put(self, product_id):
+        """Update a product by ID"""
+        data = request.json
+        name = data.get("name")
+        price = data.get("price")
+        description = data.get("description")
+
+        success = update_product(product_id, name, price, description)
+        if success:
+            return {"message": "Produit mis à jour avec succès."}
+        return {"error": f"Aucun produit trouvé avec l'ID {product_id}."}, 404
