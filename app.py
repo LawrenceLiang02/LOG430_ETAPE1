@@ -62,7 +62,7 @@ api.add_namespace(stock_api, path="/api/stocks")
 
 def run_flask():
     """Run flask simultaneously"""
-    app.run(debug=True, use_reloader=False)
+    app.run(host="0.0.0.0", port=5000, debug=True, use_reloader=False)
 
 # pylint: disable=too-many-branches
 def run_cli():
