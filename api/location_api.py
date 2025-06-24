@@ -1,6 +1,7 @@
 """API for /locations using Flask-RESTX"""
 from flask_restx import Namespace, Resource, fields
 from flask import request
+from flask_jwt_extended import jwt_required
 from service_layer.location_repository import get_all_locations
 
 api = Namespace("Locations", description="Location operations")
@@ -15,6 +16,7 @@ location_model = api.model("Location", {
 class LocationList(Resource):
     """Location list class"""
     @api.marshal_list_with(location_model)
+    @jwt_required()
     def get(self):
         """List all available locations"""
         locations = get_all_locations()
@@ -27,6 +29,7 @@ class LocationList(Resource):
 class LocationSelect(Resource):
     """Location selection API route"""
     @api.doc(params={"index": "Index (1-based) of the location to select"})
+    @jwt_required()
     def get(self):
         """
         Select a location by 1-based index.

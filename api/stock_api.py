@@ -1,6 +1,7 @@
 """Stock API for /stocks using Flask-RESTX"""
 from flask_restx import Namespace, Resource, fields
 from flask import request
+from flask_jwt_extended import jwt_required
 from service_layer.stock_repository import (
     add_stock,
     get_stock,
@@ -37,6 +38,7 @@ class StockByLocation(Resource):
     """Get stocks by location"""
     @api.doc(params={"location": "Nom de l'emplacement"})
     @api.marshal_list_with(stock_model)
+    @jwt_required()
     def get(self):
         """Get current stock for a specific location"""
         location_name = request.args.get("location")
@@ -58,6 +60,7 @@ class StockByLocation(Resource):
         ]
 
     @api.expect(stock_input)
+    @jwt_required()
     def post(self):
         """Add or transfer stock to a location"""
         data = request.json
@@ -83,6 +86,7 @@ class StockByLocation(Resource):
 class StockRequestList(Resource):
     """Create a request API route"""
     @api.marshal_list_with(stock_request_model)
+    @jwt_required()
     def get(self):
         """List all stock replenishment requests"""
         requests = get_all_stock_requests()
@@ -96,6 +100,7 @@ class StockRequestList(Resource):
         ]
 
     @api.expect(stock_input)
+    @jwt_required()
     def post(self):
         """Create a new stock request"""
         data = request.json
@@ -120,6 +125,7 @@ class StockRequestList(Resource):
 @api.route("/requests/<int:request_id>/fulfill")
 class StockRequestFulfill(Resource):
     """Fulfill a stock request API route"""
+    @jwt_required()
     def post(self, request_id):
         """Fulfill a stock request by its ID"""
         success, message = fulfill_stock_request(request_id)

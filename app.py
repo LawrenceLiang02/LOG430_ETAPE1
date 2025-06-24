@@ -5,6 +5,7 @@ import time
 from flask import Flask
 from flask_cors import CORS
 from flask_restx import Api
+from flask_jwt_extended import JWTManager
 from presentation_layer.location_view import store_selection
 from presentation_layer.product_view import add_product_view, get_products_view, search_product_view, update_product_view
 from presentation_layer.sale_view import add_sale_to_db, cancel_sale_from_db, get_sales_from_db
@@ -15,6 +16,7 @@ from api.location_api import api as location_api
 from api.product_api import api as product_api
 from api.sale_api import api as sale_api
 from api.stock_api import api as stock_api
+from api.auth_api import api as auth_api
 
 from service_layer.database import init_db
 from service_layer.location_repository import get_location_by_name
@@ -45,6 +47,8 @@ ROLE_PERMISSIONS = {
 }
 
 app = Flask(__name__)
+app.config["JWT_SECRET_KEY"] = "secret"
+jwt = JWTManager(app)
 
 CORS(app)
 
@@ -55,6 +59,7 @@ def home():
 
 api = Api(app, title="Store Management API", version="1.0", doc="/api/docs")
 
+api.add_namespace(auth_api, path="/auth")
 api.add_namespace(product_api, path="/api/products")
 api.add_namespace(location_api, path="/api/locations")
 api.add_namespace(sale_api, path="/api/sales")

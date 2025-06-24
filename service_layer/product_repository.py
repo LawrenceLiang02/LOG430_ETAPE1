@@ -11,12 +11,24 @@ def add_product(name, price, description):
     session.close()
     print("Successfully added")
 
-def get_products():
+def get_products(page=1, size=10, sort_field="id", sort_order="asc", category=None):
     """Method to get all the products"""
     session = SessionLocal()
-    products = session.query(Product).all()
+    query = session.query(Product)
+
+    if category:
+        query = query.filter(Product.category == category)
+
+    if hasattr(Product, sort_field):
+        column = getattr(Product, sort_field)
+        if sort_order == "desc":
+            column = column.desc()
+        query = query.order_by(column)
+
+    total = query.count()
+    products = query.offset((page - 1) * size).limit(size).all()
     session.close()
-    return products
+    return products, total
 
 def search_product_by(type_, keyword):
     """Search products by ID, name, or category."""

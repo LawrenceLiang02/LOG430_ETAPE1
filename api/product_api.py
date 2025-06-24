@@ -1,6 +1,7 @@
 """API for /products"""
 from flask_restx import Namespace, Resource, fields
 from flask import request
+from flask_jwt_extended import jwt_required
 from service_layer.product_repository import add_product, get_products, search_product_by, update_product
 
 api = Namespace("Products", description="Product operations")
@@ -15,12 +16,47 @@ product_model = api.model("Product", {
 @api.route("/")
 class ProductList(Resource):
     """Product list class"""
-    @api.marshal_list_with(product_model)
+    @api.doc(params={
+        "page": "Page number (starts at 1)",
+        "size": "Number of items per page",
+        "category": "Filter by category (not yet implemented)",
+        "sort": "Sort format: field[,asc|desc] (e.g. name,asc)"
+    })
+    @jwt_required()
     def get(self):
-        """List all products"""
-        return get_products()
+        """List all products with pagination, filtering, and sorting"""
+        page = int(request.args.get("page", 1))
+        size = int(request.args.get("size", 10))
+        sort = request.args.get("sort", "id,asc")
+        category = request.args.get("category")
+
+        sort_field, sort_order = (sort.split(",") + ["asc"])[:2]
+        sort_order = sort_order.lower()
+
+        products, total = get_products(
+            page=page,
+            size=size,
+            sort_field=sort_field,
+            sort_order=sort_order,
+            category=category
+        )
+
+        return {
+            "page": page,
+            "size": size,
+            "total": total,
+            "items": [
+                {
+                    "id": p.id,
+                    "name": p.name,
+                    "price": p.price,
+                    "description": p.description
+                } for p in products
+            ]
+        }
 
     @api.expect(product_model)
+    @jwt_required()
     def post(self):
         """Create a new product"""
         data = request.json
@@ -38,6 +74,7 @@ class ProductList(Resource):
 @api.route("/search")
 class ProductSearch(Resource):
     """Product search API"""
+    @jwt_required()
     def get(self):
         """Search for products by ID or name"""
         search_type = request.args.get("type")
@@ -66,6 +103,7 @@ class ProductSearch(Resource):
 @api.route("/<int:product_id>")
 class ProductUpdate(Resource):
     """Product updatate API"""
+    @jwt_required()
     def put(self, product_id):
         """Update a product by ID"""
         data = request.json
