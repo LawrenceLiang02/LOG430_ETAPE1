@@ -12,9 +12,6 @@ user_model = api.model("User", {
 
 USERS = {
     "admin": {"password": "adminpass", "role": "admin"},
-    "logistique": {"password": "logi123", "role": "centre_logistique"},
-    "Magasin 1": {"password": "mag1pass", "role": "magasin"},
-    "Magasin 2": {"password": "mag1pass", "role": "magasin"}
 }
 
 @api.route("/login")
