@@ -1,15 +1,25 @@
 """This is the main module of the application"""
 import os
-import argparse
+import threading
+import time
+from flask import Flask
+from flask_cors import CORS
+from flask_restx import Api
+from flask_jwt_extended import JWTManager
 from presentation_layer.location_view import store_selection
 from presentation_layer.product_view import add_product_view, get_products_view, search_product_view, update_product_view
 from presentation_layer.sale_view import add_sale_to_db, cancel_sale_from_db, get_sales_from_db
 from presentation_layer.stock_view import add_stock_view, get_stock_view, request_add_stock_view, get_all_stock_requests_view, fulfill_stock_request_view
 from presentation_layer.report_view import print_sales_report_csv, print_store_dashboard
 
+from api.location_api import api as location_api
+from api.product_api import api as product_api
+from api.sale_api import api as sale_api
+from api.stock_api import api as stock_api
+from api.auth_api import api as auth_api
+
 from service_layer.database import init_db
 from service_layer.location_repository import get_location_by_name
-
 
 ACTIONS = {
     "1": ("Voir la liste des produits", get_products_view),
@@ -36,11 +46,39 @@ ROLE_PERMISSIONS = {
     "Magasin": ["1", "3", "4", "5", "6", "8", "10", "13", "Q"],
 }
 
+app = Flask(__name__)
+app.config["JWT_SECRET_KEY"] = "secret"
+jwt = JWTManager(app)
+
+CORS(app, resources={
+    r"/api/*": {
+        "origins": "*",
+        "methods": ["GET", "POST", "PUT", "DELETE"],
+        "allow_headers": ["Authorization", "Content-Type"],
+        "supports_credentials": True
+    }
+})
+
+@app.route("/")
+def home():
+    """Test function"""
+    return {"message": "API is running"}
+
+api = Api(app, title="Store Management API", version="1.0", doc="/api/docs")
+
+api.add_namespace(auth_api, path="/auth")
+api.add_namespace(product_api, path="/api/products")
+api.add_namespace(location_api, path="/api/locations")
+api.add_namespace(sale_api, path="/api/sales")
+api.add_namespace(stock_api, path="/api/stocks")
+
+def run_flask():
+    """Run flask simultaneously"""
+    app.run(host="0.0.0.0", port=5000, debug=True, use_reloader=False)
+
 # pylint: disable=too-many-branches
 def run_cli():
     """Main method of the console app."""
-    init_db()
-
     role = os.getenv("ROLE")
     location_name = os.getenv("LOCATION")
     location = None
@@ -95,18 +133,27 @@ def run_cli():
             else:
                 action_fn()
 
+def main():
+    """Main method to run flask and CLI"""
+    init_db()
+    flask_thread = threading.Thread(target=run_flask, daemon=True)
+    flask_thread.start()
+    time.sleep(1)
+    run_cli()
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Choose mode: CLI or API")
-    parser.add_argument(
-        "--mode",
-        choices=["cli", "api"],
-        default="cli",
-        help="Select the mode to run: cli or api"
-    )
+    main()
+    # parser = argparse.ArgumentParser(description="Choose mode: CLI or API")
+    # parser.add_argument(
+    #     "--mode",
+    #     choices=["cli", "api"],
+    #     default="cli",
+    #     help="Select the mode to run: cli or api"
+    # )
 
-    args = parser.parse_args()
+    # args = parser.parse_args()
 
-    if args.mode == "cli":
-        run_cli()
-    elif args.mode == "api":
-        run_cli()
+    # if args.mode == "cli":
+    #     run_cli()
+    # elif args.mode == "api":
+    #     run_cli()

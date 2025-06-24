@@ -10,7 +10,6 @@ TEST_DB_URL = "sqlite:///:memory:"
 engine = create_engine(TEST_DB_URL)
 TestingSessionLocal = sessionmaker(bind=engine)
 
-
 @pytest.fixture(scope="module", autouse=True)
 def setup_database():
     """Method to set up database"""
@@ -18,12 +17,10 @@ def setup_database():
     yield
     Base.metadata.drop_all(engine)
 
-
 @pytest.fixture(autouse=True)
 def override_session(monkeypatch):
     """Method to override session"""
     monkeypatch.setattr("service_layer.sale_repository.SessionLocal", TestingSessionLocal)
-
 
 @pytest.fixture(scope="function", autouse=True)
 def clean_data():
@@ -36,7 +33,6 @@ def clean_data():
     session.commit()
     yield
     session.close()
-
 
 @pytest.fixture
 def setup_inventory():
@@ -55,7 +51,6 @@ def setup_inventory():
     session.close()
     return {"location": location, "product": product}
 
-
 def test_add_sale_success(setup_inventory):
     """Method to test add sale"""
     loc = setup_inventory["location"]
@@ -69,7 +64,6 @@ def test_add_sale_success(setup_inventory):
 
     assert len(sales) == 1
     assert stock.quantity == 45
-
 
 def test_add_sale_insufficient_stock(setup_inventory):
     """Method to test add sale but insufficient stock"""
@@ -85,18 +79,17 @@ def test_add_sale_insufficient_stock(setup_inventory):
     assert len(sales) == 0
     assert stock.quantity == 50
 
-
 def test_get_sales_by_location(setup_inventory):
     """Method to test get sales by location"""
     loc = setup_inventory["location"]
     prod = setup_inventory["product"]
     sale_repository.add_sale(prod.id, loc, 10)
 
-    sales = sale_repository.get_sales_by_location(loc)
+    sales, total = sale_repository.get_sales_by_location(loc)
+    assert total == 1
     assert len(sales) == 1
     assert sales[0].product.name == "Widget"
     assert sales[0].location.name == "Store X"
-
 
 def test_get_all_sales(setup_inventory):
     """Method to test get all sales"""
@@ -107,7 +100,6 @@ def test_get_all_sales(setup_inventory):
     all_sales = sale_repository.get_all_sales()
     assert len(all_sales) == 1
     assert all_sales[0].product_id == prod.id
-
 
 def test_cancel_sale(setup_inventory):
     """Method to test cancel sale"""

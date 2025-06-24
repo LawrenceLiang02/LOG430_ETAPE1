@@ -32,6 +32,9 @@ Ceci est un système à 2 couches puisque la logique de la couche de présentati
 ### Laboratoire 2:
 L'architecture du logiciel a évolué dans un architecture inspiré des domaines du DDD. Ce qui veut dire, c'est modularisé suivant le patron de MVC. Le folder `présentation_layer` contient les **vues**, le `service_layer` contient les **controlleurs**, et le `data_class` contient les **modèles**. Il y a des modules pour le stock, les produits, les ventes, les lieux, et la génération des rapports.
 
+### Laboratoire 3:
+Le système intègre une couche API permettant de créer des end-points pour l'extérieur. Il utilise l'authentification avec des tokens JWT.
+
 ## Analyse des besoins
 
 Fonctionnels:
@@ -70,8 +73,37 @@ Non fonctionnels
 ## Choix technologique
 
 - **Python** : langage simple et expressif, très utilisé pour des projets rapides.
+- **Flask** : Framework pour les API, très facile et parfait pour le context du projet.
 - **SQLAlchemy** : ORM mature et compatible avec plusieurs SGBD (SQLite, PostgreSQL, etc.), facilite la persistance tout en gardant l’indépendance du SGBD.
 - **SQLite** : SGBD léger, sans configuration serveur, idéal pour une application locale.
+
+## Accès à la documentation Swagger
+
+Une fois que le projet est en exécution (voir en bas pour executer), va à ce URL:
+
+`http://127.0.0.1:5000/api/docs`
+
+Cette documentation contient:
+- Description des endpoints
+- Exemples de requetes/reponses
+- Liste de tout les endpoints
+
+## Authentification
+
+L'authentification est fait avec des jetons JWT, spécifiquement de type Bearer.
+
+Une fois que vous vous etes authentifiés à `http://127.0.0.1:5000/auth/login` avec:
+
+```
+{
+  "username": "admin",
+  "password": "adminpass"
+}
+```
+
+Vous aurez un token qui expire après 15 minutes.
+
+Pour chaque requetes, ajoutez un Bearer header dans l'authentification avec le token généré.
 
 ## Diagrammes
 

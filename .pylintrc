@@ -1,5 +1,5 @@
 [FORMAT]
 max-line-length=240
-disable=too-few-public-methods, broad-exception-caught
+disable=too-few-public-methods, broad-exception-caught, R1710
 [MESSAGES CONTROL]
 disable=redefined-outer-name, duplicate-code
