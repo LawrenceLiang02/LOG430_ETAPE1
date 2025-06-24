@@ -50,7 +50,14 @@ app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = "secret"
 jwt = JWTManager(app)
 
-CORS(app)
+CORS(app, resources={
+    r"/api/*": {
+        "origins": "*",
+        "methods": ["GET", "POST", "PUT", "DELETE"],
+        "allow_headers": ["Authorization", "Content-Type"],
+        "supports_credentials": True
+    }
+})
 
 @app.route("/")
 def home():
