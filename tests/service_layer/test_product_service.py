@@ -43,8 +43,8 @@ def test_get_products():
     """Method to test get product"""
     product_repository.add_product("Prod1", 5.0, "Desc1")
     product_repository.add_product("Prod2", 15.0, "Desc2")
-    products = product_repository.get_products()
-    assert len(products) == 2
+    products, total = product_repository.get_products()
+    assert total == 2
     names = [p.name for p in products]
     assert "Prod1" in names
     assert "Prod2" in names
@@ -52,7 +52,7 @@ def test_get_products():
 def test_search_product_by_id():
     """Method to test search product by id"""
     product_repository.add_product("Unique", 20.0, "FindMe")
-    products = product_repository.get_products()
+    products, _ = product_repository.get_products()
     product_id = products[0].id
     result = product_repository.search_product_by("id", str(product_id))
     assert len(result) == 1
@@ -73,11 +73,13 @@ def test_search_product_by_invalid_type():
 def test_update_product_success():
     """Method to test update product"""
     product_repository.add_product("Old", 1.0, "Old Desc")
-    prod = product_repository.get_products()[0]
+    products, _ = product_repository.get_products()  # Décompose le tuple
+    prod = products[0]
     success, msg = product_repository.update_product(prod.id, "New", 9.0, "New Desc")
     assert success is True
     assert msg == "Produit mis à jour avec succès"
-    updated = product_repository.get_products()[0]
+    updated_products, _ = product_repository.get_products()
+    updated = updated_products[0]
     assert updated.name == "New"
     assert updated.price == 9.0
     assert updated.description == "New Desc"
