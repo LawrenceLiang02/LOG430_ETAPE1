@@ -1,4 +1,5 @@
 """This is the main module of the application"""
+import logging
 import os
 import threading
 import time
@@ -6,6 +7,7 @@ from flask import Flask
 from flask_cors import CORS
 from flask_restx import Api
 from flask_jwt_extended import JWTManager
+from prometheus_flask_exporter import PrometheusMetrics
 from presentation_layer.location_view import store_selection
 from presentation_layer.product_view import add_product_view, get_products_view, search_product_view, update_product_view
 from presentation_layer.sale_view import add_sale_to_db, cancel_sale_from_db, get_sales_from_db
@@ -20,6 +22,10 @@ from api.auth_api import api as auth_api
 
 from service_layer.database import init_db
 from service_layer.location_repository import get_location_by_name
+from logging_config import configure_logging
+
+configure_logging()
+logger = logging.getLogger(__name__)
 
 ACTIONS = {
     "1": ("Voir la liste des produits", get_products_view),
@@ -58,6 +64,11 @@ CORS(app, resources={
         "supports_credentials": True
     }
 })
+
+metrics = PrometheusMetrics(app)
+metrics.info('app_info', 'Informations de l’application', version='1.0.0')
+
+logger.info("Flask app initialisée avec les namespaces d'API")
 
 @app.route("/")
 def home():
