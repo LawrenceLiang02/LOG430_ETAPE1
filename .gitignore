@@ -185,3 +185,4 @@ cython_debug/
 rapport/*
 *.tar
 *.pdf
+/docs/UML/case_study

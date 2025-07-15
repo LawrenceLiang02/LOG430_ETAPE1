@@ -1,8 +1,12 @@
 """API for /products"""
+import logging
 from flask_restx import Namespace, Resource, fields
 from flask import request
 from flask_jwt_extended import jwt_required
+from extensions import cache
 from service_layer.product_repository import add_product, get_products, search_product_by, update_product
+
+logger = logging.getLogger(__name__)
 
 api = Namespace("Products", description="Product operations")
 
@@ -24,7 +28,8 @@ class ProductList(Resource):
     })
     @jwt_required()
     def get(self):
-        """List all products with pagination, filtering, and sorting"""
+        """Method to get"""
+        logger.info("GET /api/products - page=%s size=%s sort=%s", request.args.get("page"), request.args.get("size"), request.args.get("sort"))
         page = int(request.args.get("page", 1))
         size = int(request.args.get("size", 10))
         sort = request.args.get("sort", "id,asc")
@@ -32,6 +37,11 @@ class ProductList(Resource):
 
         sort_field, sort_order = (sort.split(",") + ["asc"])[:2]
         sort_order = sort_order.lower()
+
+        cache_key = f"products:{page}:{size}:{sort_field}:{sort_order}:{category}"
+        cached_response = cache.get(cache_key)
+        if cached_response:
+            return cached_response
 
         products, total = get_products(
             page=page,
@@ -41,7 +51,7 @@ class ProductList(Resource):
             category=category
         )
 
-        return {
+        response = {
             "page": page,
             "size": size,
             "total": total,
@@ -54,20 +64,26 @@ class ProductList(Resource):
                 } for p in products
             ]
         }
+        logger.info("Found %d products", total)
+        cache.set(cache_key, response)
+        return response
 
     @api.expect(product_model)
     @jwt_required()
     def post(self):
         """Create a new product"""
+
         data = request.json
         name = data.get("name")
         description = data.get("description")
         price = data.get("price")
+        logger.info("POST /api/products - Adding product: %s", name)
 
         if not name or not isinstance(price, (int, float)):
             api.abort(400, "Nom et prix valides requis.")
 
         add_product(name, price, description)
+        logger.info("Product added successfully")
         return {"message": "Produit ajouté avec succès."}, 201
 
 
