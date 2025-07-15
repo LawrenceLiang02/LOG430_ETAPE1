@@ -1,0 +1,23 @@
+global:
+  scrape_interval: 10s
+
+scrape_configs:
+  - job_name: 'magasin1'
+    static_configs:
+      - targets: ['magasin1:5000']
+
+  - job_name: 'magasin2'
+    static_configs:
+      - targets: ['magasin2:5000']
+
+  - job_name: 'magasin3'
+    static_configs:
+      - targets: ['magasin3:5000']
+
+  - job_name: 'centre_logistique'
+    static_configs:
+      - targets: ['centre_logistique:5000']
+
+  - job_name: 'maison_mere'
+    static_configs:
+      - targets: ['maison_mere:5000']

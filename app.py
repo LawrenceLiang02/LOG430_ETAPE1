@@ -3,6 +3,7 @@ import logging
 import os
 import threading
 import time
+from extensions import cache
 from flask import Flask
 from flask_cors import CORS
 from flask_restx import Api
@@ -13,7 +14,6 @@ from presentation_layer.product_view import add_product_view, get_products_view,
 from presentation_layer.sale_view import add_sale_to_db, cancel_sale_from_db, get_sales_from_db
 from presentation_layer.stock_view import add_stock_view, get_stock_view, request_add_stock_view, get_all_stock_requests_view, fulfill_stock_request_view
 from presentation_layer.report_view import print_sales_report_csv, print_store_dashboard
-
 from api.location_api import api as location_api
 from api.product_api import api as product_api
 from api.sale_api import api as sale_api
@@ -56,6 +56,13 @@ app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = "secret"
 jwt = JWTManager(app)
 
+app.config["CACHE_TYPE"] = "RedisCache"
+app.config["CACHE_REDIS_HOST"] = "redis"
+app.config["CACHE_REDIS_PORT"] = 6379
+app.config["CACHE_DEFAULT_TIMEOUT"] = 60
+
+cache.init_app(app)
+
 CORS(app, resources={
     r"/api/*": {
         "origins": "*",
@@ -66,7 +73,7 @@ CORS(app, resources={
 })
 
 metrics = PrometheusMetrics(app)
-metrics.info('app_info', 'Informations de l’application', version='1.0.0')
+metrics.info('app_info', 'Informations de l application', version='1.0.0')
 
 logger.info("Flask app initialisée avec les namespaces d'API")
 
