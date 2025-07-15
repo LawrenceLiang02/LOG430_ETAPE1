@@ -3,7 +3,7 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from data_class.models import Base, Location
-from service_layer.location_repository import get_all_locations, get_location_by_name
+from location_service.location_repository import get_all_locations, get_location_by_name
 
 TEST_DB_URL = "sqlite:///:memory:"
 engine = create_engine(TEST_DB_URL)

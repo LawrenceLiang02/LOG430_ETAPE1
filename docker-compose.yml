@@ -1,91 +1,73 @@
 version: '3.8'
 
 services:
-  magasin1:
-    build: .
-    ports:
-      - "8000:5000"
-    stdin_open: true
-    volumes:
-      - shared-data:/app/data
-    environment:
-      - ROLE=Magasin
-      - LOCATION=Magasin 1
-    command: python app.py
-
-  magasin2:
-    build: .
+  location_service:
+    build:
+      context: ./location_service
+    container_name: location_service
     ports:
       - "8001:5000"
-    stdin_open: true
-    volumes:
-      - shared-data:/app/data
+    depends_on:
+      - redis
     environment:
-      - ROLE=Magasin
-      - LOCATION=Magasin 2
-    command: python app.py
+      - SERVICE_NAME=location_service
 
-  magasin3:
-    build: .
+  product_service:
+    build:
+      context: ./product_service
+    container_name: product_service
     ports:
       - "8002:5000"
-    stdin_open: true
-    volumes:
-      - shared-data:/app/data
+    depends_on:
+      - redis
     environment:
-      - ROLE=Magasin
-      - LOCATION=Magasin 3
-    command: python app.py
+      - SERVICE_NAME=product_service
 
-  centre_logistique:
-    build: .
+  stock_service:
+    build:
+      context: ./stock_service
+    container_name: stock_service
     ports:
       - "8003:5000"
-    stdin_open: true
-    volumes:
-      - shared-data:/app/data
+    depends_on:
+      - redis
     environment:
-      - ROLE=Centre Logistique
-      - LOCATION=Centre Logistique
-    command: python app.py
+      - SERVICE_NAME=stock_service
 
-  maison_mere:
-    build: .
+  sale_service:
+    build:
+      context: ./sale_service
+    container_name: sale_service
     ports:
       - "8004:5000"
-    stdin_open: true
-    volumes:
-      - shared-data:/app/data
+    depends_on:
+      - redis
     environment:
-      - ROLE=Maison mère
-      - LOCATION=Maison mère
-    command: python app.py
+      - SERVICE_NAME=sale_service
 
-  prometheus:
-    image: prom/prometheus:latest
+  redis:
+    image: redis:latest
+    container_name: redis
     ports:
-      - "9090:9090"
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
+      - "6379:6379"
 
   load_balancer:
     image: nginx:latest
+    container_name: nginx_lb
     ports:
       - "8080:80"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
-      - magasin1
-      - magasin2
-      - magasin3
-      - centre_logistique
-      - maison_mere
+      - location_service
+      - product_service
+      - stock_service
+      - sale_service
 
-  redis:
-    image: redis:latest
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
     ports:
-      - "6379:6379"
-volumes:
-  shared-data:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro

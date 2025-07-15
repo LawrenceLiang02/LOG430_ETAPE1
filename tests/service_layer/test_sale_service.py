@@ -4,7 +4,7 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from data_class.models import Base, Product, Stock, Sale, Location
-from service_layer import sale_repository
+from sale_service import sale_repository
 
 TEST_DB_URL = "sqlite:///:memory:"
 engine = create_engine(TEST_DB_URL)

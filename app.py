@@ -14,14 +14,14 @@ from presentation_layer.product_view import add_product_view, get_products_view,
 from presentation_layer.sale_view import add_sale_to_db, cancel_sale_from_db, get_sales_from_db
 from presentation_layer.stock_view import add_stock_view, get_stock_view, request_add_stock_view, get_all_stock_requests_view, fulfill_stock_request_view
 from presentation_layer.report_view import print_sales_report_csv, print_store_dashboard
-from api.location_api import api as location_api
-from api.product_api import api as product_api
-from api.sale_api import api as sale_api
-from api.stock_api import api as stock_api
+from location_service.location_api import api as location_api
+from product_service.product_api import api as product_api
+from sale_service.sale_api import api as sale_api
+from stock_service.stock_api import api as stock_api
 from api.auth_api import api as auth_api
 
 from service_layer.database import init_db
-from service_layer.location_repository import get_location_by_name
+from location_service.location_repository import get_location_by_name
 from logging_config import configure_logging
 
 configure_logging()
