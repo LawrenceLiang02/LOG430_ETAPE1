@@ -1,9 +1,9 @@
 """API for /locations using Flask-RESTX"""
 import logging
-from extensions import cache
 from flask_restx import Namespace, Resource, fields
 from flask import request
 from flask_jwt_extended import jwt_required
+from extensions import cache
 from service_layer.location_repository import get_all_locations
 
 logger = logging.getLogger(__name__)

@@ -1,9 +1,9 @@
 """API for /products"""
 import logging
-from extensions import cache
 from flask_restx import Namespace, Resource, fields
 from flask import request
 from flask_jwt_extended import jwt_required
+from extensions import cache
 from service_layer.product_repository import add_product, get_products, search_product_by, update_product
 
 logger = logging.getLogger(__name__)

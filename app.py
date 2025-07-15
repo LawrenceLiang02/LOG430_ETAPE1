@@ -3,12 +3,12 @@ import logging
 import os
 import threading
 import time
-from extensions import cache
 from flask import Flask
 from flask_cors import CORS
 from flask_restx import Api
 from flask_jwt_extended import JWTManager
 from prometheus_flask_exporter import PrometheusMetrics
+from extensions import cache
 from presentation_layer.location_view import store_selection
 from presentation_layer.product_view import add_product_view, get_products_view, search_product_view, update_product_view
 from presentation_layer.sale_view import add_sale_to_db, cancel_sale_from_db, get_sales_from_db
