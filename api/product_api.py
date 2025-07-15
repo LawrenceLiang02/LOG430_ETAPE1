@@ -72,7 +72,7 @@ class ProductList(Resource):
     @jwt_required()
     def post(self):
         """Create a new product"""
-        
+
         data = request.json
         name = data.get("name")
         description = data.get("description")
