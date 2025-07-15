@@ -220,3 +220,7 @@ Le pipeline CI/CD vérifie d'abord le système de lint, spécifiquement PyLint. 
 
 `pip freeze > requirements.txt`
 
+## Test de charge avec k6
+
+`k6 run {nom-du-fichier}`
+
