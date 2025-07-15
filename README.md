@@ -1,4 +1,4 @@
-# LOG430 - Étape 1
+# LOG430 - Étape 2
 ```
 Nom: Lawrence Liang
 Groupe: 02
