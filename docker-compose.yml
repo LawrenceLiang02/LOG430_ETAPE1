@@ -52,24 +52,13 @@ services:
       - redis
     environment:
       - SERVICE_NAME=sale_service
-    
-  client_service:
-    build:
-      context: ./client_service
-    container_name: client_service
-    ports:
-      - "8005:5000"
-    depends_on:
-      - redis
-    environment:
-      - SERVICE_NAME=client_service
 
   cart_service:
     build:
       context: ./cart_service
     container_name: cart_service
     ports:
-      - "8006:5000"
+      - "8005:5000"
     depends_on:
       - redis
     environment:
@@ -94,7 +83,6 @@ services:
       - product_service
       - stock_service
       - sale_service
-      - client_service
       - cart_service
 
   krakend:
@@ -110,7 +98,6 @@ services:
       - product_service
       - stock_service
       - sale_service
-      - client_service
       - cart_service
 
   prometheus:

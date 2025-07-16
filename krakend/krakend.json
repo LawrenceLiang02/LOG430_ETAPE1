@@ -51,7 +51,7 @@
       "backend": [
         {
           "url_pattern": "/api/cart/checkout",
-          "host": ["http://cart:5000"]
+          "host": ["http://cart_service:5000"]
         }
       ]
     }
