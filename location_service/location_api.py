@@ -39,16 +39,16 @@ class LocationList(Resource):
         logger.info("Returned %d locations", len(locations))
         return result
 
-@api.route("/id/<int:id>")
+@api.route("/id/<int:location_id>")
 class LocationById(Resource):
     """Location by id"""
-    @api.doc(params={"index": "Index (1-based)"})
+    @api.doc(params={"location_id": "ID de l'emplacement"})
     @jwt_required()
-    def get(self, id):
+    def get(self, location_id):
         """Get location by id"""
-        location = get_location_by_id(id)
+        location = get_location_by_id(location_id)
         if not location:
-            api.abort(404, f"Location ID {id} introuvable.")
+            api.abort(404, f"Location ID {location_id} introuvable.")
         return {"id": location.id, "name": location.name}
 
 @api.route("/select")
