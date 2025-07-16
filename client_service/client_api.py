@@ -12,6 +12,7 @@ client_model = api.model("Client", {
 
 @api.route("/")
 class ClientCreate(Resource):
+    """Create client"""
     @api.expect(client_model)
     def post(self):
         """Create a new client account"""
@@ -28,11 +29,11 @@ class ClientCreate(Resource):
             return {"message": "Client créé", "id": client.id}, 201
         except Exception as e:
             api.abort(500, f"Erreur lors de la création: {str(e)}")
-    
+
     def get(self):
-            """Get all clients"""
-            try:
-                clients = get_all_clients()
-                return [{"id": c.id, "username": c.username, "email": c.email} for c in clients]
-            except Exception as e:
-                api.abort(500, f"Erreur lors de la récupération: {str(e)}")
+        """Get all clients"""
+        try:
+            clients = get_all_clients()
+            return [{"id": c.id, "username": c.username, "email": c.email} for c in clients]
+        except Exception as e:
+            api.abort(500, f"Erreur lors de la récupération: {str(e)}")

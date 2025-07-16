@@ -64,6 +64,17 @@ services:
     environment:
       - SERVICE_NAME=client_service
 
+  cart_service:
+    build:
+      context: ./cart_service
+    container_name: cart_service
+    ports:
+      - "8006:5000"
+    depends_on:
+      - redis
+    environment:
+      - SERVICE_NAME=cart_service
+
   redis:
     image: redis:latest
     container_name: redis
@@ -82,6 +93,8 @@ services:
       - product_service
       - stock_service
       - sale_service
+      - client_service
+      - cart_service
 
   prometheus:
     image: prom/prometheus:latest
