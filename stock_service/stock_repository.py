@@ -202,7 +202,7 @@ def fulfill_stock_request(request_id):
         return False, f"Erreur lors de l’exécution : {e}"
     finally:
         session.close()
-    
+
 def get_location_by_id_from_api(location_id):
     """Get locations by id"""
     try:

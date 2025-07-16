@@ -151,6 +151,7 @@ class StockCheck(Resource):
     """Check stock quantity for a product at a location"""
     @api.doc(params={"location_id": "ID de l'emplacement", "product_id": "ID du produit"})
     def get(self):
+        """Get stock quantity for location"""
         location_id = request.args.get("location_id", type=int)
         product_id = request.args.get("product_id", type=int)
 
@@ -178,6 +179,7 @@ class StockDeduct(Resource):
     """Deduct stock after a sale"""
     @api.expect(stock_deduct_model)
     def post(self):
+        """Post deduction of quantity"""
         data = request.json
         product_id = data.get("product_id")
         location_id = data.get("location_id")
