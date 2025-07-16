@@ -1,0 +1,37 @@
+{
+  "version": 3,
+  "name": "api-gateway",
+  "port": 8080,
+  "endpoints": [
+    { "endpoint": "/api/auth/login", "method": "POST", "backend": [{ "url_pattern": "/api/auth/login", "host": ["http://auth_service:5000"] }] },
+    { "endpoint": "/api/auth/register", "method": "POST", "backend": [{ "url_pattern": "/api/auth/register", "host": ["http://auth_service:5000"] }] },
+    { "endpoint": "/api/auth/me", "method": "GET", "input_headers": ["Authorization"], "backend": [{ "url_pattern": "/api/auth/me", "host": ["http://auth_service:5000"] }] },
+
+    { "endpoint": "/api/locations", "method": "GET", "input_headers": ["Authorization"], "output_encoding": "json", "backend": [ { "host": ["http://location_service:5000"], "url_pattern": "/api/locations/", "is_collection": true } ] },
+    { "endpoint": "/api/locations/id/{location_id}", "method": "GET", "input_headers": ["Authorization"], "backend": [ { "host": ["http://location_service:5000"], "url_pattern": "/api/locations/id/{location_id}" } ] },
+    { "endpoint": "/api/locations/select", "method": "GET", "backend": [ { "host": ["http://location_service:5000"], "url_pattern": "/api/locations/select" } ] },
+    { "endpoint": "/api/locations/{name}", "method": "GET", "backend": [ { "host": ["http://location_service:5000"], "url_pattern": "/api/locations/{name}" } ] },
+
+    { "endpoint": "/api/stocks", "method": "GET", "input_headers": ["Authorization"], "output_encoding": "json", "backend": [ { "url_pattern": "/api/stocks", "host": ["http://stock_service:5000"], "is_collection": true } ] },
+    { "endpoint": "/api/stocks", "method": "POST", "input_headers": ["Authorization"], "backend": [ { "url_pattern": "/api/stocks", "host": ["http://stock_service:5000"] } ] },
+    { "endpoint": "/api/stocks/requests", "method": "GET", "input_headers": ["Authorization"], "output_encoding": "json", "backend": [ { "url_pattern": "/api/stocks/requests", "host": ["http://stock_service:5000"], "is_collection": true } ] },
+    { "endpoint": "/api/stocks/requests", "method": "POST", "input_headers": ["Authorization"], "backend": [ { "url_pattern": "/api/stocks/requests", "host": ["http://stock_service:5000"] } ] },
+    { "endpoint": "/api/stocks/requests/{request_id}/fulfill", "method": "POST", "input_headers": ["Authorization"], "backend": [ { "url_pattern": "/api/stocks/requests/{request_id}/fulfill", "host": ["http://stock_service:5000"] } ] },
+    { "endpoint": "/api/stocks/check", "method": "GET", "backend": [ { "url_pattern": "/api/stocks/check", "host": ["http://stock_service:5000"] } ] },
+    { "endpoint": "/api/stocks/deduct", "method": "POST", "backend": [ { "url_pattern": "/api/stocks/deduct", "host": ["http://stock_service:5000"] } ] },
+
+    { "endpoint": "/api/sale", "method": "GET", "input_headers": ["Authorization"], "output_encoding": "json", "backend": [ { "url_pattern": "/api/sale", "host": ["http://sale_service:5000"], "is_collection": true } ] },
+    { "endpoint": "/api/sale", "method": "POST", "input_headers": ["Authorization"], "backend": [ { "url_pattern": "/api/sale", "host": ["http://sale_service:5000"] } ] },
+    { "endpoint": "/api/sale/{sale_id}", "method": "DELETE", "input_headers": ["Authorization"], "backend": [ { "url_pattern": "/api/sale/{sale_id}", "host": ["http://sale_service:5000"] } ] },
+
+    { "endpoint": "/api/cart", "method": "GET", "input_headers": ["Authorization"], "output_encoding": "json", "backend": [ { "url_pattern": "/api/cart", "host": ["http://cart_service:5000"], "is_collection": true } ] },
+    { "endpoint": "/api/cart", "method": "POST", "input_headers": ["Authorization"], "backend": [ { "url_pattern": "/api/cart", "host": ["http://cart_service:5000"] } ] },
+    { "endpoint": "/api/cart/checkout", "method": "POST", "input_headers": ["Authorization"], "backend": [ { "url_pattern": "/api/cart/checkout", "host": ["http://cart_service:5000"] } ] },
+
+    { "endpoint": "/api/products", "method": "GET", "is_collection": true, "input_headers": ["Authorization"], "input_query_strings": ["page", "size", "sort", "category"], "backend": [{ "url_pattern": "/api/products", "host": ["http://product_service:5000"] }] },
+    { "endpoint": "/api/products", "method": "POST", "input_headers": ["Authorization"], "backend": [{ "url_pattern": "/api/products", "host": ["http://product_service:5000"] }] },
+    { "endpoint": "/api/products/search", "method": "GET", "is_collection": true, "input_headers": ["Authorization"], "input_query_strings": ["type", "keyword"], "backend": [{ "url_pattern": "/api/products/search", "host": ["http://product_service:5000"] }] },
+    { "endpoint": "/api/products/{product_id}", "method": "PUT", "input_headers": ["Authorization"], "backend": [{ "url_pattern": "/api/products/{product_id}", "host": ["http://product_service:5000"] }] },
+    { "endpoint": "/api/products/get/{product_id}", "method": "GET", "backend": [{ "url_pattern": "/api/products/get/{product_id}", "host": ["http://product_service:5000"] }] }
+  ]
+}

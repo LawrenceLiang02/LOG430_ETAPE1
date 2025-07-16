@@ -1,7 +1,7 @@
 """
 Main app file for location service
 """
-from flask import Flask
+from flask import Flask, request
 from flask_cors import CORS
 from flask_restx import Api
 from flask_jwt_extended import JWTManager
@@ -29,6 +29,18 @@ metrics.info('locations_app_info', 'Locations Microservice Info', version='1.0.0
 
 api = Api(app, title="Locations Microservice API", version="1.0", doc="/api/docs")
 api.add_namespace(service_api, path="/api/locations")
+
+@app.before_request
+def log_headers():
+    print("------ REQUEST HEADERS ------")
+    for k, v in request.headers.items():
+        print(f"{k}: {v}")
+    print("-----------------------------")
+
+@app.route("/debug/headers")
+def debug_headers():
+    from flask import request
+    return {k: v for k, v in request.headers.items()}
 
 @app.route("/")
 def health():

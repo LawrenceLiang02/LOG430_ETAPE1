@@ -2,22 +2,26 @@ global:
   scrape_interval: 10s
 
 scrape_configs:
-  - job_name: 'magasin1'
+  - job_name: 'auth_service'
     static_configs:
-      - targets: ['magasin1:5000']
+      - targets: ['auth_service:5000']
 
-  - job_name: 'magasin2'
+  - job_name: 'location_service'
     static_configs:
-      - targets: ['magasin2:5000']
+      - targets: ['location_service:5000']
 
-  - job_name: 'magasin3'
+  - job_name: 'product_service'
     static_configs:
-      - targets: ['magasin3:5000']
+      - targets: ['product_service:5000']
 
-  - job_name: 'centre_logistique'
+  - job_name: 'stock_service'
     static_configs:
-      - targets: ['centre_logistique:5000']
+      - targets: ['stock_service:5000']
 
-  - job_name: 'maison_mere'
+  - job_name: 'sale_service'
     static_configs:
-      - targets: ['maison_mere:5000']
+      - targets: ['sale_service:5000']
+
+  - job_name: 'cart_service'
+    static_configs:
+      - targets: ['cart_service:5000']

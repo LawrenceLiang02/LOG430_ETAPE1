@@ -86,12 +86,13 @@ services:
       - cart_service
 
   krakend:
-    image: devopsfaith/krakend
+    image: krakend:latest
+    container_name: krakend
     ports:
       - "8080:8080"
     volumes:
-      - ./krakend:/etc/krakend
-    command: ["run", "-d", "-c", "/etc/krakend/krakend.json"]
+      - ./:/etc/krakend
+    command: ["krakend", "run", "-c", "/etc/krakend/krakend.json"]
     depends_on:
       - auth_service
       - location_service

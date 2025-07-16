@@ -15,7 +15,6 @@ location_model = api.model("Location", {
     "name": fields.String
 })
 
-
 @api.route("/")
 class LocationList(Resource):
     """Location list class"""
@@ -37,7 +36,7 @@ class LocationList(Resource):
         result = [{"id": l.id, "name": l.name} for l in locations]
         cache.set(cache_key, result)
         logger.info("Returned %d locations", len(locations))
-        return result
+        return result, 200
 
 @api.route("/id/<int:location_id>")
 class LocationById(Resource):
@@ -49,7 +48,7 @@ class LocationById(Resource):
         location = get_location_by_id(location_id)
         if not location:
             api.abort(404, f"Location ID {location_id} introuvable.")
-        return {"id": location.id, "name": location.name}
+        return {"id": location.id, "name": location.name}, 200
 
 @api.route("/select")
 class LocationSelect(Resource):
@@ -85,7 +84,7 @@ class LocationSelect(Resource):
 
         selected = locations[index_param - 1]
         logger.info("Location selected: %s", selected["name"])
-        return selected
+        return selected, 200
 
 @api.route("/<string:name>")
 class LocationByName(Resource):
@@ -96,4 +95,4 @@ class LocationByName(Resource):
         location = get_location_by_name(name)
         if not location:
             api.abort(404, f"Emplacement '{name}' introuvable.")
-        return {"id": location.id, "name": location.name}
+        return {"id": location.id, "name": location.name},
