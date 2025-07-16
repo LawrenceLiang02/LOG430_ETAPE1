@@ -25,19 +25,19 @@ jobs:
         run: |
           pip install -r requirements.txt
           pip install pylint
-          pylint ./stock_service
+          PYTHONPATH=. pylint .
       - name: Lint product service
         working-directory: product_service
         run: |
           pip install -r requirements.txt
           pip install pylint
-          pylint .
+          PYTHONPATH=. pylint .
       - name: Lint sale service
         working-directory: sale_service
         run: |
           pip install -r requirements.txt
           pip install pylint
-          pylint .
+          PYTHONPATH=. pylint .
       - name: Lint location_service
         working-directory: location_service
         run: |
