@@ -35,7 +35,7 @@ stock_request_model = api.model("StockRequest", {
     "quantity": fields.Integer
 })
 
-@api.route("/")
+@api.route("/", strict_slashes=False)
 class StockByLocation(Resource):
     """Get stocks by location"""
     @api.doc(params={"location": "Nom de l'emplacement"})

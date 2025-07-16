@@ -17,7 +17,7 @@ product_model = api.model("Product", {
     "description": fields.String
 })
 
-@api.route("/")
+@api.route("/", strict_slashes=False)
 class ProductList(Resource):
     """Product list class"""
     @api.doc(params={

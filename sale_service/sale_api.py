@@ -23,7 +23,7 @@ sale_input_model = api.model("NewSale", {
 })
 
 
-@api.route("/")
+@api.route("/", strict_slashes=False)
 class SaleList(Resource):
     """main api route for /"""
     @api.doc(params={

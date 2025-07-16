@@ -1,18 +1,19 @@
 version: '3.8'
 
 services:
-  auth_service:
+  auth_service_1:
     build:
       context: ./auth_service
-    container_name: auth_service
+    container_name: auth_service_1
     ports:
       - "8000:5000"
     environment:
       - SERVICE_NAME=auth_service
-  location_service:
+
+  location_service_1:
     build:
       context: ./location_service
-    container_name: location_service
+    container_name: location_service_1
     ports:
       - "8001:5000"
     depends_on:
@@ -20,10 +21,21 @@ services:
     environment:
       - SERVICE_NAME=location_service
 
-  product_service:
+  location_service_2:
+    build:
+      context: ./location_service
+    container_name: location_service_2
+    ports:
+      - "8011:5000"
+    depends_on:
+      - redis
+    environment:
+      - SERVICE_NAME=location_service
+
+  product_service_1:
     build:
       context: ./product_service
-    container_name: product_service
+    container_name: product_service_1
     ports:
       - "8002:5000"
     depends_on:
@@ -31,10 +43,21 @@ services:
     environment:
       - SERVICE_NAME=product_service
 
-  stock_service:
+  product_service_2:
+    build:
+      context: ./product_service
+    container_name: product_service_2
+    ports:
+      - "8012:5000"
+    depends_on:
+      - redis
+    environment:
+      - SERVICE_NAME=product_service
+
+  stock_service_1:
     build:
       context: ./stock_service
-    container_name: stock_service
+    container_name: stock_service_1
     ports:
       - "8003:5000"
     depends_on:
@@ -42,10 +65,10 @@ services:
     environment:
       - SERVICE_NAME=stock_service
 
-  sale_service:
+  sale_service_1:
     build:
       context: ./sale_service
-    container_name: sale_service
+    container_name: sale_service_1
     ports:
       - "8004:5000"
     depends_on:
@@ -53,10 +76,10 @@ services:
     environment:
       - SERVICE_NAME=sale_service
 
-  cart_service:
+  cart_service_1:
     build:
       context: ./cart_service
-    container_name: cart_service
+    container_name: cart_service_1
     ports:
       - "8005:5000"
     depends_on:
@@ -78,28 +101,32 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
-      - auth_service
-      - location_service
-      - product_service
-      - stock_service
-      - sale_service
-      - cart_service
+      - auth_service_1
+      - location_service_1
+      - location_service_2
+      - product_service_1
+      - product_service_2
+      - stock_service_1
+      - sale_service_1
+      - cart_service_1
 
   krakend:
     image: krakend:latest
     container_name: krakend
     ports:
-      - "8080:8080"
+      - "8081:8080"
     volumes:
       - ./:/etc/krakend
     command: ["krakend", "run", "-c", "/etc/krakend/krakend.json"]
     depends_on:
-      - auth_service
-      - location_service
-      - product_service
-      - stock_service
-      - sale_service
-      - cart_service
+      - auth_service_1
+      - location_service_1
+      - location_service_2
+      - product_service_1
+      - product_service_2
+      - stock_service_1
+      - sale_service_1
+      - cart_service_1
 
   prometheus:
     image: prom/prometheus:latest

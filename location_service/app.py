@@ -1,11 +1,13 @@
 """
 Main app file for location service
 """
-from flask import Flask, request
+from flask import Flask
 from flask_cors import CORS
 from flask_restx import Api
 from flask_jwt_extended import JWTManager
 from prometheus_flask_exporter import PrometheusMetrics
+from prometheus_client import make_wsgi_app
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
 from database import init_db
 from extensions import cache
@@ -24,28 +26,20 @@ cache.init_app(app)
 
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-metrics = PrometheusMetrics(app)
-metrics.info('locations_app_info', 'Locations Microservice Info', version='1.0.0')
-
-api = Api(app, title="Locations Microservice API", version="1.0", doc="/api/docs")
-api.add_namespace(service_api, path="/api/locations")
-
-@app.before_request
-def log_headers():
-    print("------ REQUEST HEADERS ------")
-    for k, v in request.headers.items():
-        print(f"{k}: {v}")
-    print("-----------------------------")
-
-@app.route("/debug/headers")
-def debug_headers():
-    from flask import request
-    return {k: v for k, v in request.headers.items()}
+metrics = PrometheusMetrics(app, defaults_prefix=None, group_by='endpoint', register_defaults=True)
+metrics.info('app_info', 'Informations de l application', version='1.0.0')
 
 @app.route("/")
 def health():
     """Health of the microservice"""
     return {"message": "Location Microservice running"}
+
+api = Api(app, title="Locations Microservice API", version="1.0", doc="/api/docs")
+api.add_namespace(service_api, path="/api/locations")
+
+app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {
+    '/metrics': make_wsgi_app()
+})
 
 if __name__ == "__main__":
     init_db()
