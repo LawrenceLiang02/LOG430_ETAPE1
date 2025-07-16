@@ -95,4 +95,4 @@ class LocationByName(Resource):
         location = get_location_by_name(name)
         if not location:
             api.abort(404, f"Emplacement '{name}' introuvable.")
-        return {"id": location.id, "name": location.name},
+        return {"id": location.id, "name": location.name}, 200
