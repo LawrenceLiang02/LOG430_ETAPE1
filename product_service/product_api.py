@@ -137,6 +137,7 @@ class ProductUpdate(Resource):
 class ProductGet(Resource):
     """Get a product by ID (for internal use)"""
     def get(self, product_id):
+        """Get product method"""
         product = get_product_by_id(product_id)
         if not product:
             api.abort(404, f"Produit ID {product_id} introuvable.")

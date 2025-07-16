@@ -17,7 +17,7 @@ def get_stock_from_api(product_id, location_id):
     """Check stock availability from stock_service"""
     try:
         response = requests.get(
-            f"http://localhost:8003/api/stocks/check",
+            "http://localhost:8003/api/stocks/check",
             params={"product_id": product_id, "location_id": location_id},
             timeout=3
         )
@@ -27,6 +27,7 @@ def get_stock_from_api(product_id, location_id):
         return None
 
 def deduct_stock(product_id, location_id, quantity):
+    """Method to deduct stock"""
     try:
         response = requests.post(
             "http://localhost:8003/api/stocks/deduct",
@@ -175,5 +176,5 @@ def get_location_by_name_from_api(name):
         response = requests.get(f"http://localhost:8001/api/locations/{name}", timeout=3)
         response.raise_for_status()
         return response.json()
-    except requests.exceptions.RequestException as e:
+    except requests.exceptions.RequestException:
         return None
