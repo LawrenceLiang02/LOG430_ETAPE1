@@ -4,12 +4,18 @@ Main app file for location service
 from flask import Flask
 from flask_cors import CORS
 from flask_restx import Api
+from flask_jwt_extended import JWTManager
 from prometheus_flask_exporter import PrometheusMetrics
+
 from database import init_db
 from extensions import cache
 from location_api import api as service_api
 
 app = Flask(__name__)
+
+app.config["JWT_SECRET_KEY"] = "super-secret-key"
+jwt = JWTManager(app)
+
 app.config["CACHE_TYPE"] = "RedisCache"
 app.config["CACHE_REDIS_HOST"] = "redis"
 app.config["CACHE_REDIS_PORT"] = 6379

@@ -55,7 +55,6 @@ class LocationById(Resource):
 class LocationSelect(Resource):
     """Location selection API route"""
     @api.doc(params={"index": "Index (1-based) of the location to select"})
-    @jwt_required()
     def get(self):
         """
         Select a location by 1-based index.

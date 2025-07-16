@@ -2,6 +2,7 @@
 from flask_restx import Namespace, Resource, fields
 from flask_jwt_extended import create_access_token
 from flask import request
+from auth_repository import authenticate_user
 
 api = Namespace("Auth", description="Authentification simple")
 
@@ -10,20 +11,22 @@ user_model = api.model("User", {
     "password": fields.String(required=True)
 })
 
-USERS = {
-    "admin": {"password": "adminpass", "role": "admin"},
-}
-
 @api.route("/login")
 class Login(Resource):
-    """Class for /login"""
+    """Classe pour l'authentification des utilisateurs"""
     @api.expect(user_model)
     def post(self):
-        """Method to post /login"""
+        """Login et génération du token JWT"""
         data = request.json
-        user = USERS.get(data["username"])
-        if not user or user["password"] != data["password"]:
+        username = data.get("username")
+        password = data.get("password")
+
+        user = authenticate_user(username, password)
+        if not user:
             return {"error": "Identifiants invalides"}, 401
 
-        access_token = create_access_token(identity=data["username"])
+        access_token = create_access_token(
+            identity=user.username,
+            additional_claims={"role": user.role}
+        )
         return {"access_token": access_token}
