@@ -60,28 +60,28 @@ jobs:
         run: |
           pip install -r requirements.txt
           pip install pytest
-          PYTHONPATH=. pytest test
+          PYTHONPATH=. pytest tests
 
       - name: Run tests for product service
         working-directory: product_service
         run: |
           pip install -r requirements.txt
           pip install pytest
-          PYTHONPATH=. pytest test
+          PYTHONPATH=. pytest tests
 
       - name: Run tests for sale service
         working-directory: sale_service
         run: |
           pip install -r requirements.txt
           pip install pytest
-          PYTHONPATH=. pytest test
+          PYTHONPATH=. pytest tests
 
       - name: Run tests for location service
         working-directory: location_service
         run: |
           pip install -r requirements.txt
           pip install pytest
-          PYTHONPATH=. pytest test
+          PYTHONPATH=. pytest tests
 
   build-and-push:
     runs-on: ubuntu-latest
