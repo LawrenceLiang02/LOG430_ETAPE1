@@ -1,0 +1,59 @@
+{
+  "$schema": "https://www.krakend.io/schema/v3.json",
+  "version": 3,
+  "name": "api-gateway",
+  "port": 8080,
+  "timeout": "3000ms",
+  "endpoints": [
+    {
+      "endpoint": "/api/auth/login",
+      "method": "POST",
+      "backend": [
+        {
+          "url_pattern": "/api/auth/login",
+          "host": ["http://auth_service:5000"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/locations",
+      "method": "GET",
+      "extra_config": {
+        "github.com/devopsfaith/krakend/http": {
+          "headers_to_pass": ["Authorization"]
+        }
+      },
+      "backend": [
+        {
+          "url_pattern": "/api/locations",
+          "host": ["http://location_service:5000"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/products",
+      "method": "GET",
+      "backend": [
+        {
+          "url_pattern": "/api/products",
+          "host": ["http://product_service:5000"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/cart/checkout",
+      "method": "POST",
+      "extra_config": {
+        "github.com/devopsfaith/krakend/http": {
+          "headers_to_pass": ["Authorization"]
+        }
+      },
+      "backend": [
+        {
+          "url_pattern": "/api/cart/checkout",
+          "host": ["http://cart:5000"]
+        }
+      ]
+    }
+  ]
+}

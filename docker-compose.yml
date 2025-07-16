@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  auth-service:
+  auth_service:
     build:
       context: ./auth_service
     container_name: auth_service
@@ -89,6 +89,23 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
+      - auth_service
+      - location_service
+      - product_service
+      - stock_service
+      - sale_service
+      - client_service
+      - cart_service
+
+  krakend:
+    image: devopsfaith/krakend
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./krakend:/etc/krakend
+    command: ["run", "-d", "-c", "/etc/krakend/krakend.json"]
+    depends_on:
+      - auth_service
       - location_service
       - product_service
       - stock_service
