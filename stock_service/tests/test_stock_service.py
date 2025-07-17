@@ -1,12 +1,9 @@
 """Unit tests for stock_service.py"""
-
 import sys
 import os
-from unittest.mock import patch, MagicMock
 
-# Ensure proper import path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
+from unittest.mock import patch, MagicMock
 import pytest
 from stock_repository import (
     get_location_by_name_from_api,
