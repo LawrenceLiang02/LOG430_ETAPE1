@@ -11,7 +11,7 @@ Ceci est une application console qui gère l'inventaire et les ventes d'une comp
 Dans ce projet, j'applique:
 - Un workflow CI/CD retrouvé dans la page "Actions" de GitHub
 - Un conteneur Docker qui est publié sur DockerHub
-- Une application CRUD qui gère les ventes et les produits
+- Une application CRUD qui gère les ventes, les produits, le stock, le chariot, les locations, et les utilisateurs
 - Des tests unitaires automatisés sur chaque branche à chaque commit.
 - Automatiser l'utilisation d'un Linter pour vérifier mon code source
 
@@ -19,21 +19,26 @@ Les piles technologiques utilisé sont:
 - Python pour la logique
 - SQLAlchemy en tant qu'ORM
 - SQLite pour la base de donnée
+- KrakenD comme API Gateway
+- Prometheus pour obtenir les metrics du système
+- NGINX pour load balancing
+- Redis pour caching
 
 ## L'architecture
 
-### Laboratoire 1:
-Ceci est un système à 2 couches puisque la logique de la couche de présentation et la couche de donnée sont séparées. 
+### Laboratoire 5:
 
-À travers le CLI, on communique avec la base de données SQLite à travers le système de fichier.
+Ceci a adopté maintenant une architecture de microservices. Les services comprennent:
+- un service d'authentification qui utilise un token JWT et contrôle la création d'utilisateur
+- un service de stock pour controller l'inventaire
+- un service de produit pour créer des produits qui peuvent être stocké
+- un service pour gerer les locations (lieux)
+- un service pour gerer le chariot et la selection d'un utilisateur
+- un service pour gerer les ventes
 
-![diagramme d'architecture](./docs/UML/lab1/architecture.png)
+Chaque microservice respectent l'architecture de trois couches.
 
-### Laboratoire 2:
-L'architecture du logiciel a évolué dans un architecture inspiré des domaines du DDD. Ce qui veut dire, c'est modularisé suivant le patron de MVC. Le folder `présentation_layer` contient les **vues**, le `service_layer` contient les **controlleurs**, et le `data_class` contient les **modèles**. Il y a des modules pour le stock, les produits, les ventes, les lieux, et la génération des rapports.
-
-### Laboratoire 3:
-Le système intègre une couche API permettant de créer des end-points pour l'extérieur. Il utilise l'authentification avec des tokens JWT.
+![architecture](./docs/UML/lab5/architecture.png)
 
 ## Analyse des besoins
 
@@ -69,6 +74,9 @@ Non fonctionnels
 | 2 | Séparation des responsabilités entre présentation, logique et persistance (labo 1) | [ADR 2](docs/ADR/ADR2.md)|
 | 3 | Choix d’une architecture modulaire inspirée de DDD (labo 2) | [ADR 3](docs/ADR/ADR3.md) |
 | 4 | Conteneurisation avec Docker Compose pour la simulation multi-sites (labo 2) | [ADR 4](docs/ADR/ADR4.md) |
+| 5 | Choix de la passerelle API (KrakenD) (labo 5) | [ADR 5](docs/ADR/ADR5.md) |
+| 6 | Choix du reverse proxy (NGINX) (labo 4) | [ADR 6](docs/ADR/ADR6.md) |
+| 7 | Choix du système de cache (Redis) (labo 4) | [ADR 7](docs/ADR/ADR7.md) |
 
 ## Choix technologique
 
@@ -76,23 +84,36 @@ Non fonctionnels
 - **Flask** : Framework pour les API, très facile et parfait pour le context du projet.
 - **SQLAlchemy** : ORM mature et compatible avec plusieurs SGBD (SQLite, PostgreSQL, etc.), facilite la persistance tout en gardant l’indépendance du SGBD.
 - **SQLite** : SGBD léger, sans configuration serveur, idéal pour une application locale.
+- **KrakenD** : API Gateway hautes performances permettant d’agréger plusieurs microservices sous une seule interface. Il facilite la gestion des routes, la transformation des requêtes/réponses, la validation, et l’authentification. Idéal pour centraliser les appels à l’API et limiter le couplage entre frontend et services internes.
+
+- **NGINX** : Serveur web et proxy inverse très performant. Il agit comme point d’entrée initial pour recevoir les requêtes HTTP(S), gérer le SSL/TLS, et répartir la charge vers plusieurs instances de KrakenD ou d’autres services. Il améliore la sécurité et la résilience globale du système.
+
+- **Redis** : Système de cache en mémoire très rapide. Utilisé pour stocker temporairement les tokens d’authentification (JWT) ou d’autres données partagées entre microservices, afin de réduire les appels aux bases de données et d'améliorer la performance globale du système.
 
 ## Accès à la documentation Swagger
 
 Une fois que le projet est en exécution (voir en bas pour executer), va à ce URL:
 
-`http://127.0.0.1:5000/api/docs`
+`http://localhost:{port}/api/docs`
 
 Cette documentation contient:
 - Description des endpoints
 - Exemples de requetes/reponses
 - Liste de tout les endpoints
 
+Voici les ports pour chaque service:
+- Auth: 8000
+- Location: 8001
+- Product: 8002
+- Stock: 8003
+- Sale: 8004
+- Cart: 8005
+
 ## Authentification
 
 L'authentification est fait avec des jetons JWT, spécifiquement de type Bearer.
 
-Une fois que vous vous etes authentifiés à `http://127.0.0.1:5000/auth/login` avec:
+Une fois que vous vous etes authentifiés à `http://localhost:8080/auth/login` avec:
 
 ```
 {
@@ -109,23 +130,23 @@ Pour chaque requetes, ajoutez un Bearer header dans l'authentification avec le t
 
 ### Vue Logique
 
-![diagramme de classe](./docs/UML/lab2/logique.png)
+![diagramme de classe](./docs/UML/lab5/logique.png)
 
 ### Vue des processus
 
-![diagramme processus](./docs/UML/lab2/process.png)
+![diagramme processus](./docs/UML/lab5/process.png)
 
 ### Vue de deploiement
 
-![diagramme de deploiement](./docs/UML/lab2/deploiement.png)
+![diagramme de deploiement](./docs/UML/lab5/deploiement.png)
 
 ### Vue d'implémentation
 
-![diagramme d'implémentation](./docs/UML/lab2/implementation.png)
+![diagramme d'implémentation](./docs/UML/lab5/implementation.png)
 
 ### Vue de cas d'utilisation
 
-![diagramme de cas d'utilisation](./docs/UML/lab2/casutilisation.png)
+![diagramme de cas d'utilisation](./docs/UML/lab5/casutilisation.png)
 
 ## Instruction d'installation et d'execution pour le developpement
 
@@ -224,3 +245,8 @@ Le pipeline CI/CD vérifie d'abord le système de lint, spécifiquement PyLint. 
 
 `k6 run {nom-du-fichier}`
 
+## Custom Grafana
+
+Importer le fichier nommé `grafana_custom_dash.json`
+
+![alt text](image.png)

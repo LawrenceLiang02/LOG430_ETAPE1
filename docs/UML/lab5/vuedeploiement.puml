@@ -1,0 +1,48 @@
+@startuml depl
+node "Serveur 1" {
+    [NGINX]
+    [KrakenD]
+    [Redis]
+    [Prometheus]
+}
+
+cloud "Poste client"
+
+node "Auth Service" {
+    [Auth API]
+    database "SQLite Auth"
+}
+
+node "Stock Service" {
+    [Stock API]
+    database "SQLite Stock"
+}
+
+node "Sale Service" {
+    [Sale API]
+    database "SQLite Sale"
+}
+
+node "Product Service" {
+    [Product API]
+    database "SQLite Product"
+}
+
+node "Location Service" {
+    [Location API]
+    database "SQLite Location"
+}
+
+"Poste client" --> [NGINX]
+[NGINX] --> [KrakenD]
+[KrakenD] --> [Auth API]
+[KrakenD] --> [Stock API]
+[KrakenD] --> [Sale API]
+[KrakenD] --> [Product API]
+[KrakenD] --> [Location API]
+[Prometheus] --> [Auth API]
+[Prometheus] --> [Stock API]
+[Prometheus] --> [Sale API]
+[Prometheus] --> [Product API]
+[Prometheus] --> [Location API]
+@enduml

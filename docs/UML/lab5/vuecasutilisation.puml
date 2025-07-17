@@ -1,0 +1,21 @@
+@startuml cu
+left to right direction
+actor Admin
+actor Client
+
+rectangle "Système Caisse" {
+    usecase "S'authentifier" as UC1
+    usecase "Consulter les produits" as UC2
+    usecase "Vérifier le stock" as UC3
+    usecase "Effectuer une vente" as UC4
+    usecase "Créer une demande de réapprovisionnement" as UC5
+    usecase "Creer un compte" as UC6
+}
+
+Vendeur --> UC1
+Vendeur --> UC2
+Vendeur --> UC3
+Vendeur --> UC4
+Vendeur --> UC5
+Client --> UC6
+@enduml
