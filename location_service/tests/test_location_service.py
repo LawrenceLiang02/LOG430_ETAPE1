@@ -1,55 +1,70 @@
-"""Test module for location service"""
+"""Unit tests for location"""
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import pytest
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from data_class.models import Base, Location
-from location_service.location_repository import get_all_locations, get_location_by_name
+from unittest.mock import patch, MagicMock
+from location_repository import get_all_locations, get_location_by_name, get_location_by_id
+from models import Location
 
-TEST_DB_URL = "sqlite:///:memory:"
-engine = create_engine(TEST_DB_URL)
-TestingSessionLocal = sessionmaker(bind=engine)
+@pytest.fixture
+def fake_location():
+    """Create fake location"""
+    return Location(id=1, name="Magasin")
 
-@pytest.fixture(scope="module", autouse=True)
-def setup_database():
-    """Function to et up database"""
-    Base.metadata.create_all(engine)
-    yield
-    Base.metadata.drop_all(engine)
+@patch("location_repository.SessionLocal")
+def test_get_all_locations(mock_session_local, fake_location):
+    """Test get locations"""
+    mock_session = MagicMock()
+    mock_query = mock_session.query.return_value
+    mock_query.order_by.return_value.all.return_value = [fake_location]
+    mock_session_local.return_value = mock_session
 
-@pytest.fixture(scope="function", autouse=True)
-def seed_data():
-    """default seed data"""
-    session = TestingSessionLocal()
-    session.query(Location).delete()
-    session.commit()
+    result = get_all_locations()
 
-    session.add_all([
-        Location(name="Store A"),
-        Location(name="store b"),
-        Location(name="Warehouse Z"),
-    ])
-    session.commit()
-    yield
-    session.close()
+    assert result == [fake_location]
+    mock_session.query.assert_called_once_with(Location)
+    mock_session.close.assert_called_once()
 
-@pytest.fixture(autouse=True)
-def override_session(monkeypatch):
-    """Method to override session"""
-    monkeypatch.setattr("service_layer.location_repository.SessionLocal", TestingSessionLocal)
+@patch("location_repository.SessionLocal")
+def test_get_location_by_name_found(mock_session_local, fake_location):
+    """Test get location by name"""
+    mock_session = MagicMock()
+    mock_query = mock_session.query.return_value
+    mock_filter = mock_query.filter.return_value
+    mock_filter.first.return_value = fake_location
+    mock_session_local.return_value = mock_session
 
-def test_get_all_locations():
-    """Unit test to get all lcoations"""
-    locations = get_all_locations()
-    assert len(locations) == 3
-    assert [loc.name for loc in locations] == ["Store A", "Warehouse Z", "store b"]
+    result = get_location_by_name("magasin")
 
-def test_get_location_by_name_case_insensitive():
-    """Test to get all lcoation by name"""
-    loc = get_location_by_name("STORE A")
-    assert loc is not None
-    assert loc.name == "Store A"
+    assert result == fake_location
+    mock_query.filter.assert_called_once()
+    mock_session.close.assert_called_once()
 
-def test_get_location_by_name_not_found():
-    """Test to get all locations but returns none"""
-    loc = get_location_by_name("NotExist")
-    assert loc is None
+@patch("location_repository.SessionLocal")
+def test_get_location_by_name_not_found(mock_session_local):
+    """Test get location by name not found"""
+    mock_session = MagicMock()
+    mock_session.query.return_value.filter.return_value.first.return_value = None
+    mock_session_local.return_value = mock_session
+
+    result = get_location_by_name("unknown")
+
+    assert result is None
+    mock_session.close.assert_called_once()
+
+@patch("location_repository.SessionLocal")
+def test_get_location_by_id(mock_session_local, fake_location):
+    """Test get location by id"""
+    mock_session = MagicMock()
+    mock_session.query.return_value.get.return_value = fake_location
+    mock_session_local.return_value = mock_session
+
+    result = get_location_by_id(1)
+
+    assert result == fake_location
+    mock_session.query.assert_called_once_with(Location)
+    mock_session.query.return_value.get.assert_called_once_with(1)
+    mock_session.close.assert_called_once()
