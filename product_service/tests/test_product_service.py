@@ -18,7 +18,7 @@ from models import Product
 
 @pytest.fixture
 def fake_product():
-    return Product(id=1, name="Test Product", price=10.0, description="Sample description", category="Electronics")
+    return Product(id=1, name="Test Product", price=10.0, description="Sample description")
 
 @patch("product_repository.SessionLocal")
 def test_add_product(mock_session_local):
