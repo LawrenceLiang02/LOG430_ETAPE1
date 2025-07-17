@@ -1,0 +1,23 @@
+@startuml proc
+actor Utilisateur
+
+participant "KrakenD Gateway" as Gateway
+participant "Auth API"
+participant "Product API"
+participant "Stock API"
+participant "Sale API"
+participant "Location API"
+
+Utilisateur -> Gateway : HTTP Request
+Gateway -> "Auth API" : Authentification (JWT)
+Gateway -> "Product API" : Liste des produits
+Gateway -> "Stock API" : Vérifie le stock
+Gateway -> "Sale API" : Crée une vente
+Gateway -> "Location API" : Trouve l'emplacement
+
+note right of "Auth API"
+    Peut utiliser Redis
+    pour stocker les sessions JWT
+end note
+
+@enduml

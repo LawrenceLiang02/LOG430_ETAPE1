@@ -1,0 +1,60 @@
+@startuml architecture
+skinparam componentStyle rectangle
+skinparam shadowing false
+
+[NGINX] <<load-balancer>>
+[KrakenD] <<gateway>>
+
+[NGINX] --> [KrakenD]
+
+package "Auth Service" {
+    component AuthAPI <<API>>
+    component AuthLogic <<Logic>>
+    database AuthDB <<SQLite>>
+
+    AuthAPI --> AuthLogic
+    AuthLogic --> AuthDB
+    [KrakenD] --> AuthAPI
+}
+
+package "Stock Service" {
+    component StockAPI <<API>>
+    component StockLogic <<Logic>>
+    database StockDB <<SQLite>>
+
+    StockAPI --> StockLogic
+    StockLogic --> StockDB
+    [KrakenD] --> StockAPI
+}
+
+package "Sale Service" {
+    component SaleAPI <<API>>
+    component SaleLogic <<Logic>>
+    database SaleDB <<SQLite>>
+
+    SaleAPI --> SaleLogic
+    SaleLogic --> SaleDB
+    [KrakenD] --> SaleAPI
+}
+
+package "Product Service" {
+    component ProductAPI <<API>>
+    component ProductLogic <<Logic>>
+    database ProductDB <<SQLite>>
+
+    ProductAPI --> ProductLogic
+    ProductLogic --> ProductDB
+    [KrakenD] --> ProductAPI
+}
+
+package "Location Service" {
+    component LocationAPI <<API>>
+    component LocationLogic <<Logic>>
+    database LocationDB <<SQLite>>
+
+    LocationAPI --> LocationLogic
+    LocationLogic --> LocationDB
+    [KrakenD] --> LocationAPI
+}
+
+@enduml

@@ -1,0 +1,15 @@
+@startuml impl
+
+package "x_service" {
+    [app.py]
+    [x_api.py]
+    [x_repository.py]
+    [models.py]
+    [database.py]
+}
+
+package "gateway" {
+    [krakend.json]
+    [nginx.conf]
+}
+@enduml
