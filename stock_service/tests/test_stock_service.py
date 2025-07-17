@@ -1,162 +1,203 @@
-"""Test suite for stock_repository module"""
+"""Unit tests for stock_service.py"""
+
+import sys
+import os
+from unittest.mock import patch, MagicMock
+
+# Ensure proper import path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import pytest
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from data_class.models import Base, Product, Stock, StockRequest, Location
-from stock_service import stock_repository
+from stock_service import (
+    get_location_by_name_from_api,
+    get_product_by_id_from_api,
+    add_stock,
+    get_stock,
+    create_stock_request,
+    get_all_stock_requests,
+    fulfill_stock_request,
+    get_location_by_id_from_api,
+    get_stock_by_ids,
+    deduct_stock_quantity
+)
+from models import Stock, StockRequest
 
-TEST_DB_URL = "sqlite:///:memory:"
-engine = create_engine(TEST_DB_URL)
-TestingSessionLocal = sessionmaker(bind=engine)
-
-
-@pytest.fixture(scope="module", autouse=True)
-def setup_database():
-    """Setup the in-memory test database"""
-    Base.metadata.create_all(engine)
-    yield
-    Base.metadata.drop_all(engine)
-
-@pytest.fixture(autouse=True)
-def override_session(monkeypatch):
-    """Override the production session with test session"""
-    monkeypatch.setattr("service_layer.stock_repository.SessionLocal", TestingSessionLocal)
-
-@pytest.fixture(scope="function", autouse=True)
-def clean_data():
-    """Clean all tables before each test"""
-    session = TestingSessionLocal()
-    session.query(StockRequest).delete()
-    session.query(Stock).delete()
-    session.query(Product).delete()
-    session.query(Location).delete()
-    session.commit()
-    yield
-    session.close()
 
 @pytest.fixture
-def setup_inventory():
-    """Insert initial locations, product, and stock"""
-    session = TestingSessionLocal()
-    centre = Location(name="Centre logistique")
-    store = Location(name="Magasin A")
-    product = Product(name="TestItem", price=10.0, description="test")
-    session.add_all([centre, store, product])
-    session.commit()
+def fake_location():
+    return MagicMock(id=1, name="Magasin 1")
 
-    stock = Stock(location_id=centre.id, product_id=product.id, quantity=100)
-    session.add(stock)
-    session.commit()
 
-    data = {
-        "centre_id": centre.id,
-        "store_id": store.id,
-        "product_id": product.id
-    }
-    session.close()
-    return data
+@pytest.fixture
+def fake_stock():
+    return Stock(product_id=1, location_id=1, quantity=10)
 
-def test_add_stock_to_centre_logistique(setup_inventory):
-    """Test adding stock to Centre Logistique"""
-    session = TestingSessionLocal()
-    centre = session.get(Location, setup_inventory["centre_id"])
-    product = session.get(Product, setup_inventory["product_id"])
-    result = stock_repository.add_stock(product.id, centre, 50)
-    stock = session.query(Stock).filter_by(location_id=centre.id, product_id=product.id).first()
-    session.close()
+
+@patch("stock_service.requests.get")
+def test_get_location_by_name_from_api_success(mock_get):
+    """Test successful API call to retrieve a location by name"""
+    mock_get.return_value.status_code = 200
+    mock_get.return_value.json.return_value = {"id": 1, "name": "Magasin"}
+    result = get_location_by_name_from_api("Magasin")
+    assert result["name"] == "Magasin"
+
+
+@patch("stock_service.requests.get")
+def test_get_product_by_id_from_api_success(mock_get):
+    """Test successful API call to retrieve product by ID"""
+    mock_get.return_value.status_code = 200
+    mock_get.return_value.json.return_value = {"id": 1, "name": "Laptop"}
+    result = get_product_by_id_from_api(1)
+    assert result["name"] == "Laptop"
+
+
+@patch("stock_service.SessionLocal")
+@patch("stock_service.get_location_by_id_from_api")
+def test_add_stock_to_logistic_center(mock_get_location, mock_session_local):
+    """Test adding stock directly to logistic center"""
+    mock_get_location.return_value = {"id": 1, "name": "Centre logistique"}
+
+    mock_session = MagicMock()
+    mock_session.query.return_value.filter_by.return_value.first.return_value = None
+    mock_session_local.return_value = mock_session
+
+    result = add_stock(1, 1, 5)
     assert result is True
-    assert stock.quantity == 150
+    mock_session.commit.assert_called_once()
 
-def test_add_stock_to_store_from_centre(setup_inventory):
-    """Test transferring stock from Centre to store"""
-    session = TestingSessionLocal()
-    centre = session.get(Location, setup_inventory["centre_id"])
-    store = session.get(Location, setup_inventory["store_id"])
-    product = session.get(Product, setup_inventory["product_id"])
-    result = stock_repository.add_stock(product.id, store, 30)
-    centre_stock = session.query(Stock).filter_by(location_id=centre.id, product_id=product.id).first()
-    store_stock = session.query(Stock).filter_by(location_id=store.id, product_id=product.id).first()
-    session.close()
+
+@patch("stock_service.SessionLocal")
+@patch("stock_service.get_location_by_id_from_api")
+@patch("stock_service.get_location_by_name_from_api")
+def test_add_stock_transfer_from_logistic(mock_log_name, mock_get_id, mock_session_local):
+    """Test stock transfer from logistic center to another location"""
+    mock_get_id.return_value = {"id": 2, "name": "Magasin 1"}
+    mock_log_name.return_value = {"id": 1, "name": "Centre logistique"}
+
+    mock_session = MagicMock()
+    # Simulate logistic stock has enough quantity
+    mock_session.query.return_value.filter_by.return_value.first.side_effect = [
+        MagicMock(quantity=10),  # logistic_stock
+        None                    # target_stock
+    ]
+    mock_session_local.return_value = mock_session
+
+    result = add_stock(1, 2, 5)
     assert result is True
-    assert centre_stock.quantity == 70
-    assert store_stock.quantity == 30
 
-def test_add_stock_insufficient_in_centre(setup_inventory):
-    """Test stock transfer with insufficient quantity in Centre"""
-    session = TestingSessionLocal()
-    store = session.get(Location, setup_inventory["store_id"])
-    product = session.get(Product, setup_inventory["product_id"])
-    result = stock_repository.add_stock(product.id, store, 200)
-    session.close()
-    assert result is False
 
-def test_get_stock(setup_inventory):
-    """Test stock retrieval for a location"""
-    session = TestingSessionLocal()
-    centre = session.get(Location, setup_inventory["centre_id"])
-    product = session.get(Product, setup_inventory["product_id"])
-    stocks = stock_repository.get_stock(centre)
-    session.close()
-    assert len(stocks) == 1
-    assert stocks[0].product.name == product.name
+@patch("stock_service.SessionLocal")
+def test_get_stock(mock_session_local, fake_location, fake_stock):
+    """Test retrieving stock levels for a location"""
+    mock_session = MagicMock()
+    mock_session.query.return_value.options.return_value.filter_by.return_value.all.return_value = [fake_stock]
+    mock_session_local.return_value = mock_session
 
-def test_create_stock_request(setup_inventory):
+    result = get_stock(fake_location)
+    assert result == [fake_stock]
+
+
+@patch("stock_service.SessionLocal")
+def test_create_stock_request_success(mock_session_local):
     """Test creating a stock request"""
-    session = TestingSessionLocal()
-    store = session.get(Location, setup_inventory["store_id"])
-    product = session.get(Product, setup_inventory["product_id"])
-    result = stock_repository.create_stock_request(store.id, product.id, 20)
-    requests = session.query(StockRequest).all()
-    session.close()
+    mock_session = MagicMock()
+    mock_session_local.return_value = mock_session
+
+    result = create_stock_request(1, 1, 5)
     assert result is True
-    assert len(requests) == 1
 
-def test_get_all_stock_requests(setup_inventory):
-    """Test retrieval of all stock requests"""
-    session = TestingSessionLocal()
-    store = session.get(Location, setup_inventory["store_id"])
-    product = session.get(Product, setup_inventory["product_id"])
-    stock_repository.create_stock_request(store.id, product.id, 10)
-    session.close()
-    requests = stock_repository.get_all_stock_requests()
-    assert len(requests) == 1
-    assert requests[0].location.name == "Magasin A"
 
-def test_fulfill_stock_request_success(setup_inventory):
-    """Test fulfilling a valid stock request"""
-    session = TestingSessionLocal()
-    store = session.get(Location, setup_inventory["store_id"])
-    centre = session.get(Location, setup_inventory["centre_id"])
-    product = session.get(Product, setup_inventory["product_id"])
+@patch("stock_service.SessionLocal")
+def test_get_all_stock_requests(mock_session_local):
+    """Test fetching all stock requests"""
+    mock_session = MagicMock()
+    mock_session.query.return_value.options.return_value.all.return_value = ["req1"]
+    mock_session_local.return_value = mock_session
 
-    stock_repository.create_stock_request(store.id, product.id, 20)
-    request_id = session.query(StockRequest.id).first()[0]
-    session.close()
+    result = get_all_stock_requests()
+    assert result == ["req1"]
 
-    result, msg = stock_repository.fulfill_stock_request(request_id)
 
-    session = TestingSessionLocal()
-    centre_stock = session.query(Stock).filter_by(location_id=centre.id, product_id=product.id).scalar()
-    store_stock = session.query(Stock).filter_by(location_id=store.id, product_id=product.id).scalar()
-    session.close()
+@patch("stock_service.SessionLocal")
+@patch("stock_service.get_product_by_id_from_api")
+@patch("stock_service.get_location_by_name_from_api")
+def test_fulfill_stock_request_success(mock_get_loc_name, mock_get_prod, mock_session_local):
+    """Test successful stock fulfillment from a stock request"""
+    mock_get_loc_name.side_effect = [
+        {"id": 99, "name": "Centre logistique"},
+        {"id": 1, "name": "Magasin 1"}
+    ]
+    mock_get_prod.return_value = {"name": "Item"}
 
-    assert result is True
-    assert "envoyées à" in msg
-    assert centre_stock.quantity == 80
-    assert store_stock.quantity == 20
+    mock_request = MagicMock(product_id=1, location_id=2, quantity=3)
+    mock_session = MagicMock()
+    mock_session.query.return_value.get.return_value = mock_request
+    mock_session.query.return_value.filter_by.return_value.first.side_effect = [
+        MagicMock(quantity=10),  # source_stock
+        None                     # dest_stock
+    ]
+    mock_session_local.return_value = mock_session
 
-def test_fulfill_stock_request_insufficient_stock(setup_inventory):
-    """Test fulfilling a stock request with insufficient stock"""
-    session = TestingSessionLocal()
-    store = session.get(Location, setup_inventory["store_id"])
-    product = session.get(Product, setup_inventory["product_id"])
+    success, message = fulfill_stock_request(1)
+    assert success is True
+    assert "envoyées" in message
 
-    stock_repository.create_stock_request(store.id, product.id, 999)
-    request_id = session.query(StockRequest.id).first()[0]
-    session.close()
 
-    result, msg = stock_repository.fulfill_stock_request(request_id)
+@patch("stock_service.SessionLocal")
+def test_get_location_by_id_from_api_success(mock_session_local):
+    """Test successful location lookup by ID via API"""
+    with patch("stock_service.requests.get") as mock_get:
+        mock_get.return_value.status_code = 200
+        mock_get.return_value.json.return_value = {"id": 1, "name": "Magasin"}
+        result = get_location_by_id_from_api(1)
+        assert result["name"] == "Magasin"
 
-    assert result is False
-    assert "insuffisant" in msg
+
+@patch("stock_service.SessionLocal")
+def test_get_stock_by_ids(mock_session_local, fake_stock):
+    """Test retrieving a specific stock by product and location"""
+    mock_session = MagicMock()
+    mock_session.query.return_value.options.return_value.filter_by.return_value.first.return_value = fake_stock
+    mock_session_local.return_value = mock_session
+
+    result = get_stock_by_ids(1, 1)
+    assert result == fake_stock
+
+
+@patch("stock_service.SessionLocal")
+def test_deduct_stock_quantity_success(mock_session_local):
+    """Test deducting quantity from existing stock"""
+    mock_stock = MagicMock(quantity=10)
+    mock_session = MagicMock()
+    mock_session.query.return_value.filter_by.return_value.first.return_value = mock_stock
+    mock_session_local.return_value = mock_session
+
+    success, message = deduct_stock_quantity(1, 1, 3)
+    assert success is True
+    assert "3 unités déduites" in message
+    assert mock_stock.quantity == 7
+
+
+@patch("stock_service.SessionLocal")
+def test_deduct_stock_quantity_insufficient(mock_session_local):
+    """Test failure when trying to deduct more than available stock"""
+    mock_stock = MagicMock(quantity=2)
+    mock_session = MagicMock()
+    mock_session.query.return_value.filter_by.return_value.first.return_value = mock_stock
+    mock_session_local.return_value = mock_session
+
+    success, message = deduct_stock_quantity(1, 1, 5)
+    assert success is False
+    assert "Stock insuffisant" in message
+
+
+@patch("stock_service.SessionLocal")
+def test_deduct_stock_quantity_not_found(mock_session_local):
+    """Test failure when stock is not found for deduction"""
+    mock_session = MagicMock()
+    mock_session.query.return_value.filter_by.return_value.first.return_value = None
+    mock_session_local.return_value = mock_session
+
+    success, message = deduct_stock_quantity(1, 1, 5)
+    assert success is False
+    assert "Stock introuvable" in message

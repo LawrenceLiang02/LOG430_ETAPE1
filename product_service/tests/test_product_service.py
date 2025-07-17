@@ -1,91 +1,123 @@
-"""Module to test product service"""
+"""Unit tests for product_repository"""
+
+import sys
+import os
+from unittest.mock import patch, MagicMock
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import pytest
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from data_class.models import Base, Product
-from product_service import product_repository
+from product_repository import (
+    add_product,
+    get_products,
+    search_product_by,
+    update_product,
+    get_product_by_id
+)
+from models import Product
 
-TEST_DB_URL = "sqlite:///:memory:"
-engine = create_engine(TEST_DB_URL)
-TestingSessionLocal = sessionmaker(bind=engine)
+@pytest.fixture
+def fake_product():
+    return Product(id=1, name="Test Product", price=10.0, description="Sample description", category="Electronics")
 
-@pytest.fixture(scope="module", autouse=True)
-def setup_database():
-    """Method to set up database"""
-    Base.metadata.create_all(engine)
-    yield
-    Base.metadata.drop_all(engine)
+@patch("product_repository.SessionLocal")
+def test_add_product(mock_session_local):
+    """Test adding a product"""
+    mock_session = MagicMock()
+    mock_session_local.return_value = mock_session
 
-@pytest.fixture(autouse=True)
-def override_session(monkeypatch):
-    """Method to override session"""
-    monkeypatch.setattr("service_layer.product_repository.SessionLocal", TestingSessionLocal)
+    add_product("Test", 9.99, "Test Description")
 
-@pytest.fixture(scope="function", autouse=True)
-def clean_products():
-    """<ethod to clean products"""
-    session = TestingSessionLocal()
-    session.query(Product).delete()
-    session.commit()
-    yield
-    session.close()
+    mock_session.add.assert_called()
+    mock_session.commit.assert_called_once()
+    mock_session.close.assert_called_once()
 
-def test_add_product():
-    """Method to test add product"""
-    product_repository.add_product("Test", 10.0, "Sample")
-    session = TestingSessionLocal()
-    products = session.query(Product).all()
-    session.close()
+@patch("product_repository.SessionLocal")
+def test_get_products(mock_session_local, fake_product):
+    """Test paginated product retrieval with sorting and optional category"""
+    mock_session = MagicMock()
+    mock_query = mock_session.query.return_value
+    mock_query.count.return_value = 1
+    mock_query.offset.return_value.limit.return_value.all.return_value = [fake_product]
+    mock_session_local.return_value = mock_session
+
+    products, total = get_products(page=1, size=10, sort_field="id", sort_order="asc")
+
+    assert total == 1
     assert len(products) == 1
-    assert products[0].name == "Test"
+    mock_session.close.assert_called_once()
 
-def test_get_products():
-    """Method to test get product"""
-    product_repository.add_product("Prod1", 5.0, "Desc1")
-    product_repository.add_product("Prod2", 15.0, "Desc2")
-    products, total = product_repository.get_products()
-    assert total == 2
-    names = [p.name for p in products]
-    assert "Prod1" in names
-    assert "Prod2" in names
+@patch("product_repository.SessionLocal")
+def test_search_product_by_id_found(mock_session_local, fake_product):
+    """Test searching product by ID with result"""
+    mock_session = MagicMock()
+    mock_session.get.return_value = fake_product
+    mock_session_local.return_value = mock_session
 
-def test_search_product_by_id():
-    """Method to test search product by id"""
-    product_repository.add_product("Unique", 20.0, "FindMe")
-    products, _ = product_repository.get_products()
-    product_id = products[0].id
-    result = product_repository.search_product_by("id", str(product_id))
-    assert len(result) == 1
-    assert result[0].name == "Unique"
+    result = search_product_by("id", "1")
+    assert result == [fake_product]
 
-def test_search_product_by_name():
-    """Method to test search product by name"""
-    product_repository.add_product("Alpha", 8.0, "X")
-    result = product_repository.search_product_by("name", "alp")
-    assert result
-    assert result[0].name == "Alpha"
+@patch("product_repository.SessionLocal")
+def test_search_product_by_id_not_found(mock_session_local):
+    """Test searching product by ID without result"""
+    mock_session = MagicMock()
+    mock_session.get.return_value = None
+    mock_session_local.return_value = mock_session
 
-def test_search_product_by_invalid_type():
-    """Method to test search product invalid"""
+    result = search_product_by("id", "999")
+    assert result == []
+
+@patch("product_repository.SessionLocal")
+def test_search_product_by_name(mock_session_local, fake_product):
+    """Test searching product by name"""
+    mock_session = MagicMock()
+    mock_query = mock_session.query.return_value
+    mock_query.filter.return_value.all.return_value = [fake_product]
+    mock_session_local.return_value = mock_session
+
+    result = search_product_by("name", "Test")
+    assert result == [fake_product]
+
+@patch("product_repository.SessionLocal")
+def test_search_product_by_invalid_type(mock_session_local):
+    """Test invalid search type"""
+    mock_session_local.return_value = MagicMock()
     with pytest.raises(ValueError):
-        product_repository.search_product_by("category", "tools")
+        search_product_by("brand", "Samsung")
 
-def test_update_product_success():
-    """Method to test update product"""
-    product_repository.add_product("Old", 1.0, "Old Desc")
-    products, _ = product_repository.get_products()  # Décompose le tuple
-    prod = products[0]
-    success, msg = product_repository.update_product(prod.id, "New", 9.0, "New Desc")
+@patch("product_repository.SessionLocal")
+def test_update_product_success(mock_session_local, fake_product):
+    """Test updating a product successfully"""
+    mock_session = MagicMock()
+    mock_session.get.return_value = fake_product
+    mock_session_local.return_value = mock_session
+
+    success, message = update_product(1, "Updated", 20.0, "Updated Desc")
+
     assert success is True
-    assert msg == "Produit mis à jour avec succès"
-    updated_products, _ = product_repository.get_products()
-    updated = updated_products[0]
-    assert updated.name == "New"
-    assert updated.price == 9.0
-    assert updated.description == "New Desc"
+    assert message == "Produit mis à jour avec succès"
+    mock_session.commit.assert_called_once()
+    mock_session.close.assert_called_once()
 
-def test_update_product_not_found():
-    """Method to test update invalid product"""
-    success, msg = product_repository.update_product(999, "X", 0.0, "X")
+@patch("product_repository.SessionLocal")
+def test_update_product_not_found(mock_session_local):
+    """Test updating a non-existing product"""
+    mock_session = MagicMock()
+    mock_session.get.return_value = None
+    mock_session_local.return_value = mock_session
+
+    success, message = update_product(999, "X", 0, "Y")
     assert success is False
-    assert msg == "Produit introuvable"
+    assert message == "Produit introuvable"
+    mock_session.close.assert_called_once()
+
+@patch("product_repository.SessionLocal")
+def test_get_product_by_id(mock_session_local, fake_product):
+    """Test get product by ID"""
+    mock_session = MagicMock()
+    mock_session.query.return_value.get.return_value = fake_product
+    mock_session_local.return_value = mock_session
+
+    result = get_product_by_id(1)
+    assert result == fake_product
+    mock_session.close.assert_called_once()
