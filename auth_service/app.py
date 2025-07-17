@@ -19,7 +19,7 @@ def health():
     """Auth health check"""
     return {"message": "Auth service running"}
 
-api = Api(app, title="Auth Service API", version="1.0")
+api = Api(app, title="Auth Service API", version="1.0", doc="/docs")
 api.add_namespace(auth_namespace, path="/api/auth")
 
 metrics = PrometheusMetrics(app, defaults_prefix=None, group_by='endpoint', register_defaults=True)

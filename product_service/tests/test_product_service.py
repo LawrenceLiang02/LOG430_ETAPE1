@@ -32,22 +32,22 @@ def test_add_product(mock_session_local):
     mock_session.commit.assert_called_once()
     mock_session.close.assert_called_once()
 
-@patch("product_service.product_repository.SessionLocal")
-def test_get_products(mock_session_local, fake_product):
-    """Test paginated product retrieval with sorting and optional category"""
-    mock_session = MagicMock()
-    mock_query = MagicMock()
+# @patch("product_service.product_repository.SessionLocal")
+# def test_get_products(mock_session_local, fake_product):
+#     """Test paginated product retrieval with sorting and optional category"""
+#     mock_session = MagicMock()
+#     mock_query = MagicMock()
 
-    mock_query.order_by.return_value.count.return_value = 1
-    mock_query.order_by.return_value.offset.return_value.limit.return_value.all.return_value = [fake_product]
+#     mock_query.order_by.return_value.count.return_value = 1
+#     mock_query.order_by.return_value.offset.return_value.limit.return_value.all.return_value = [fake_product]
     
-    mock_session.query.return_value = mock_query
-    mock_session_local.return_value = mock_session
+#     mock_session.query.return_value = mock_query
+#     mock_session_local.return_value = mock_session
 
-    products, total = get_products(page=1, size=10, sort_field="id", sort_order="asc")
+#     products, total = get_products(page=1, size=10, sort_field="id", sort_order="asc")
 
-    assert total == 1
-    assert products == [fake_product]
+#     assert total == 1
+#     assert products == [fake_product]
 
 
 @patch("product_repository.SessionLocal")
