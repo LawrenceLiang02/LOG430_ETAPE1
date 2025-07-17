@@ -249,4 +249,4 @@ Le pipeline CI/CD vérifie d'abord le système de lint, spécifiquement PyLint. 
 
 Importer le fichier nommé `grafana_custom_dash.json`
 
-![alt text](image.png)
+![alt text](grafana_custom_dash.png)
