@@ -3,6 +3,7 @@
 Nom: Lawrence Liang
 Groupe: 02
 Session: Été 2025
+Lien GitHub: https://github.com/LawrenceLiang02/LOG430_ETAPE1
 ```
 
 ## Description
@@ -177,7 +178,14 @@ Dans la machine virtuelle, voici des commandes à utiliser.
 
 ### Télécharger la plus nouvelle version sur docker hub
 
-`docker pull liangtzai/mon-api-flask:latest`
+```
+docker pull liangtzai/auth_service:latest
+docker pull liangtzai/sale_service:latest
+docker pull liangtzai/stock_service:latest
+docker pull liangtzai/location_service:latest
+docker pull liangtzai/product_service:latest
+docker pull liangtzai/cart_service:latest
+```
 
 ### Assurez vous d'avoir un `docker-compose.yml`
 
@@ -187,38 +195,74 @@ Dans ce fichier docker-compose.yml, vous pouvez créer autant d'instance de maga
 version: '3.8'
 
 services:
-  maison_mere:
-    image: liangtzai/mon-api-flask:latest
-    stdin_open: true
-    tty: true
-    environment:
-      - ROLE=Maison mère
-      - LOCATION=Maison mère
-    volumes:
-      - shared_db:/app/data
+  auth_service:
+    image: liangtzai/auth_service:latest
+    ports:
+      - "5001:5000"
 
-  centre_logistique:
-    image: liangtzai/mon-api-flask:latest
-    stdin_open: true
-    tty: true
-    environment:
-      - ROLE=Centre Logistique
-      - LOCATION=Centre Logistique
-    volumes:
-      - shared_db:/app/data
+  sale_service:
+    image: liangtzai/sale_service:latest
+    ports:
+      - "5002:5000"
 
-  magasin1:
-    image: liangtzai/mon-api-flask:latest
-    stdin_open: true
-    tty: true
-    environment:
-      - ROLE=Magasin
-      - LOCATION=Magasin 1
-    volumes:
-      - shared_db:/app/data
+  stock_service:
+    image: liangtzai/stock_service:latest
+    ports:
+      - "5003:5000"
 
-volumes:
-  shared_db:
+  location_service:
+    image: liangtzai/location_service:latest
+    ports:
+      - "5004:5000"
+
+  product_service:
+    image: liangtzai/product_service:latest
+    ports:
+      - "5005:5000"
+
+  cart_service:
+    image: liangtzai/cart_service:latest
+    ports:
+      - "5006:5000"
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+
+  krakend:
+    image: devopsfaith/krakend
+    volumes:
+      - ./krakend/krakend.json:/etc/krakend/krakend.json
+    ports:
+      - "8080:8080"
+    depends_on:
+      - auth_service
+      - sale_service
+      - stock_service
+      - location_service
+      - product_service
+      - cart_service
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "80:80"
+    depends_on:
+      - krakend
+
+networks:
+  default:
+    name: microservices_net
 
 ```
 
