@@ -238,18 +238,20 @@ services:
       - "9090:9090"
 
   krakend:
-    image: devopsfaith/krakend
-    volumes:
-      - ./krakend/krakend.json:/etc/krakend/krakend.json
-    ports:
-      - "8080:8080"
-    depends_on:
-      - auth_service
-      - sale_service
-      - stock_service
-      - location_service
-      - product_service
-      - cart_service
+  image: krakend:latest
+  container_name: krakend
+  ports:
+    - "8081:8080"
+  volumes:
+    - ./krakend:/etc/krakend
+  command: ["krakend", "run", "-c", "/etc/krakend/krakend.json"]
+  depends_on:
+    - auth_service
+    - sale_service
+    - stock_service
+    - location_service
+    - product_service
+    - cart_service
 
   nginx:
     image: nginx:latest
