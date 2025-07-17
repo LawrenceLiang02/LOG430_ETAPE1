@@ -7,7 +7,7 @@ from unittest.mock import patch, MagicMock
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import pytest
-from sale_service import (
+from sale_repository import (
     add_sale,
     get_sales_by_location,
     get_all_sales,

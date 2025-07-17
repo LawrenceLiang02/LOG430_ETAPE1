@@ -8,7 +8,7 @@ from unittest.mock import patch, MagicMock
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import pytest
-from stock_service import (
+from stock_repository import (
     get_location_by_name_from_api,
     get_product_by_id_from_api,
     add_stock,
