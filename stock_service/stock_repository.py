@@ -1,98 +1,84 @@
 """Stock module for the data access layer"""
 import requests
-from sqlalchemy.orm import joinedload
 from database import SessionLocal
 from models import Stock, StockRequest
+from urllib.parse import quote
 
-def get_location_by_name_from_api(name):
-    """Method to get location"""
+def _auth_headers(auth_header: str | None):
+    print("Token", auth_header)
+    if not auth_header:
+        return {}
+    if not auth_header.lower().startswith("bearer "):
+        auth_header = f"Bearer {auth_header}"
+    return {"Authorization": auth_header}
+
+def get_location_by_name_from_api(name, auth_header=None):
     try:
-        response = requests.get(f"http://localhost:8001/api/locations/{name}", timeout=3)
+        headers = _auth_headers(auth_header)
+        response = requests.get(
+            f"http://localhost:8001/api/locations/{quote(name)}",
+            headers=headers,
+            timeout=3
+        )
         response.raise_for_status()
         return response.json()
     except requests.RequestException:
         return None
 
-def get_product_by_id_from_api(product_id):
-    """Method to get product"""
+def get_location_by_id_from_api(location_id, auth_header=None):
     try:
-        response = requests.get(f"http://localhost:8002/api/products/{product_id}", timeout=3)
+        headers = _auth_headers(auth_header)
+        response = requests.get(
+            f"http://localhost:8001/api/locations/id/{location_id}",
+            headers=headers,
+            timeout=3
+        )
         response.raise_for_status()
         return response.json()
     except requests.RequestException:
         return None
 
-def add_stock(product_id: int, location_id: int, quantity: int):
-    """
-    Ajoute du stock à une localisation.
-    - Si la localisation est "Centre logistique" → approvisionner
-    - Sinon → déduire du stock du centre logistique
-    """
+def get_product_by_id_from_api(product_id, auth_header=None):
+    try:
+        headers = _auth_headers(auth_header)
+        response = requests.get(
+            f"http://localhost:8002/api/products/get/{product_id}",
+            headers=headers,
+            timeout=3
+        )
+        response.raise_for_status()
+        return response.json()
+    except requests.RequestException:
+        return None
+
+def add_stock(product_id: int, location_id: int, quantity: int, auth_header=None):
+    """Add stock directly to a location without checking Centre logistique."""
     session = SessionLocal()
     try:
-        location_data = get_location_by_id_from_api(location_id)
+        # Check that location exists
+        location_data = get_location_by_id_from_api(location_id, auth_header)
         if not location_data:
-            print("Location inconnue.")
+            print(f"Location ID {location_id} inconnue.")
             return False
 
-        is_logistic = location_data["name"].lower() == "centre logistique"
-
-        if is_logistic:
-            # Ajoute du stock directement dans le centre logistique
-            stock = session.query(Stock).filter_by(
-                product_id=product_id,
-                location_id=location_id
-            ).first()
-
-            if stock:
-                stock.quantity += quantity
-            else:
-                stock = Stock(
-                    product_id=product_id,
-                    location_id=location_id,
-                    quantity=quantity
-                )
-                session.add(stock)
-
-            session.commit()
-            print(f"{quantity} unités ajoutées au centre logistique.")
-            return True
-
-        logistic_location = get_location_by_name_from_api("Centre logistique")
-        if not logistic_location:
-            print("Centre logistique introuvable.")
-            return False
-
-        logistic_id = logistic_location["id"]
-
-        logistic_stock = session.query(Stock).filter_by(
-            product_id=product_id,
-            location_id=logistic_id
-        ).first()
-
-        if not logistic_stock or logistic_stock.quantity < quantity:
-            print(f"Stock insuffisant au centre logistique ({logistic_stock.quantity if logistic_stock else 0}).")
-            return False
-
-        logistic_stock.quantity -= quantity
-
-        target_stock = session.query(Stock).filter_by(
+        # Add stock to the location
+        stock = session.query(Stock).filter_by(
             product_id=product_id,
             location_id=location_id
         ).first()
 
-        if target_stock:
-            target_stock.quantity += quantity
+        if stock:
+            stock.quantity += quantity
         else:
-            target_stock = Stock(
+            stock = Stock(
                 product_id=product_id,
                 location_id=location_id,
                 quantity=quantity
             )
-            session.add(target_stock)
+            session.add(stock)
 
         session.commit()
-        print(f"{quantity} unités transférées du centre logistique vers {location_data['name']}")
+        print(f"{quantity} unités ajoutées à {location_data['name']}.")
         return True
 
     except Exception as e:
@@ -102,16 +88,33 @@ def add_stock(product_id: int, location_id: int, quantity: int):
     finally:
         session.close()
 
-def get_stock(location):
+def get_stock(location_id, auth_header=None):
     """
-    Récupère les niveaux de stock pour une location spécifique."""
+    Récupère les niveaux de stock pour une location spécifique en appelant
+    les services product et location.
+    """
     session = SessionLocal()
+    stocks_list = []
+
     try:
-        stocks = session.query(Stock).options(
-            joinedload(Stock.product),
-            joinedload(Stock.location)
-        ).filter_by(location_id=location.id).all()
-        return stocks
+        stocks = session.query(Stock).filter_by(location_id=location_id).all()
+
+        location_data = get_location_by_id_from_api(location_id, auth_header)
+        location_name = location_data.get("name", "Inconnu") if location_data else "Inconnu"
+
+        for s in stocks:
+            product_data = get_product_by_id_from_api(s.product_id, auth_header)
+            product_name = product_data.get("name", "Produit inconnu") if product_data else "Produit inconnu"
+
+            stocks_list.append({
+                "product_id": s.product_id,
+                "product_name": product_name,
+                "quantity": s.quantity,
+                "location": location_name
+            })
+
+        return stocks_list
+
     finally:
         session.close()
 
@@ -132,20 +135,29 @@ def create_stock_request(location_id, product_id, quantity):
         print(f"Erreur: {e}")
         return False
 
-def get_all_stock_requests():
-    """Retourne toutes les demandes de stock avec leurs relations chargées"""
+def get_all_stock_requests(auth_header=None):
+    """Retourne toutes les demandes de stock avec infos produits et locations via API."""
     session = SessionLocal()
-    requests = session.query(StockRequest).options(
-        joinedload(StockRequest.product),
-        joinedload(StockRequest.location)
-    ).all()
-    session.close()
-    return requests
+    try:
+        requests = session.query(StockRequest).all()
+        result = []
+        for r in requests:
+            product_data = get_product_by_id_from_api(r.product_id, auth_header)
+            location_data = get_location_by_id_from_api(r.location_id, auth_header)
+            result.append({
+                "id": r.id,
+                "location": location_data.get("name", "Inconnu") if location_data else "Inconnu",
+                "product": product_data.get("name", "Produit inconnu") if product_data else "Produit inconnu",
+                "quantity": r.quantity
+            })
+        return result
+    finally:
+        session.close()
 
-def fulfill_stock_request(request_id):
-    """Execute une demande de réapprovisionnement"""
+
+def fulfill_stock_request(request_id, auth_header=None):
+    """Execute une demande de réapprovisionnement avec API calls."""
     session = SessionLocal()
-
     try:
         request = session.query(StockRequest).get(request_id)
         if not request:
@@ -155,10 +167,9 @@ def fulfill_stock_request(request_id):
         destination_id = request.location_id
         quantity = request.quantity
 
-        centre_data = get_location_by_name_from_api("Centre logistique")
+        centre_data = get_location_by_name_from_api("Centre logistique", auth_header)
         if not centre_data:
             return False, "Centre Logistique introuvable via API."
-
         centre_id = centre_data["id"]
 
         source_stock = session.query(Stock).filter_by(
@@ -167,7 +178,10 @@ def fulfill_stock_request(request_id):
         ).first()
 
         if not source_stock or source_stock.quantity < quantity:
-            return False, f"Stock insuffisant au Centre Logistique ({source_stock.quantity if source_stock else 0})."
+            return False, (
+                f"Stock insuffisant au Centre Logistique "
+                f"({source_stock.quantity if source_stock else 0})."
+            )
 
         source_stock.quantity -= quantity
 
@@ -189,40 +203,37 @@ def fulfill_stock_request(request_id):
         session.delete(request)
         session.commit()
 
-        product_data = get_product_by_id_from_api(product_id) or {"name": "Produit inconnu"}
-        destination_data = get_location_by_name_from_api(destination_id) or {"name": "Destination inconnue"}
+        product_data = get_product_by_id_from_api(product_id, auth_header) or {"name": "Produit inconnu"}
+        destination_data = get_location_by_id_from_api(destination_id, auth_header) or {"name": "Destination inconnue"}
 
-        return True, (
-            f"{quantity} unités de {product_data['name']} envoyées à "
-            f"{destination_data['name']}."
-        )
-
+        return True, f"{quantity} unités de {product_data['name']} envoyées à {destination_data['name']}."
     except Exception as e:
         session.rollback()
         return False, f"Erreur lors de l’exécution : {e}"
     finally:
         session.close()
 
-def get_location_by_id_from_api(location_id):
-    """Get locations by id"""
-    try:
-        response = requests.get(f"http://localhost:8001/api/locations/id/{location_id}", timeout=3)
-        response.raise_for_status()
-        return response.json()
-    except requests.RequestException:
-        return None
-
-def get_stock_by_ids(product_id, location_id):
-    """Retourne un stock spécifique pour un produit à un endroit"""
+def get_stock_by_ids(product_id, location_id, auth_header=None):
+    """Retourne un stock spécifique avec infos produits et location."""
     session = SessionLocal()
     try:
-        return session.query(Stock).options(
-            joinedload(Stock.product),
-            joinedload(Stock.location)
-        ).filter_by(
+        stock = session.query(Stock).filter_by(
             product_id=product_id,
             location_id=location_id
         ).first()
+
+        if not stock:
+            return None
+
+        product_data = get_product_by_id_from_api(product_id, auth_header)
+        location_data = get_location_by_id_from_api(location_id, auth_header)
+
+        return {
+            "product_id": product_id,
+            "product_name": product_data.get("name", "Produit inconnu") if product_data else "Produit inconnu",
+            "quantity": stock.quantity,
+            "location": location_data.get("name", "Inconnu") if location_data else "Inconnu"
+        }
     finally:
         session.close()
 
