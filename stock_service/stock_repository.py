@@ -1,10 +1,11 @@
 """Stock module for the data access layer"""
 import requests
+from urllib.parse import quote
 from database import SessionLocal
 from models import Stock, StockRequest
-from urllib.parse import quote
 
 def _auth_headers(auth_header: str | None):
+    """Verify auth header"""
     print("Token", auth_header)
     if not auth_header:
         return {}
@@ -13,6 +14,7 @@ def _auth_headers(auth_header: str | None):
     return {"Authorization": auth_header}
 
 def get_location_by_name_from_api(name, auth_header=None):
+    """Get location by name from location api"""
     try:
         headers = _auth_headers(auth_header)
         response = requests.get(
@@ -26,6 +28,7 @@ def get_location_by_name_from_api(name, auth_header=None):
         return None
 
 def get_location_by_id_from_api(location_id, auth_header=None):
+    """Get location by id from location api"""
     try:
         headers = _auth_headers(auth_header)
         response = requests.get(
@@ -39,6 +42,7 @@ def get_location_by_id_from_api(location_id, auth_header=None):
         return None
 
 def get_product_by_id_from_api(product_id, auth_header=None):
+    """Get product by id from location api"""
     try:
         headers = _auth_headers(auth_header)
         response = requests.get(
@@ -55,13 +59,11 @@ def add_stock(product_id: int, location_id: int, quantity: int, auth_header=None
     """Add stock directly to a location without checking Centre logistique."""
     session = SessionLocal()
     try:
-        # Check that location exists
         location_data = get_location_by_id_from_api(location_id, auth_header)
         if not location_data:
             print(f"Location ID {location_id} inconnue.")
             return False
 
-        # Add stock to the location
         stock = session.query(Stock).filter_by(
             product_id=product_id,
             location_id=location_id

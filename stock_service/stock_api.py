@@ -48,7 +48,6 @@ class StockByLocation(Resource):
         if not location_name:
             api.abort(400, "Paramètre 'location' requis.")
 
-        # Pass token
         location_data = get_location_by_name_from_api(location_name, auth_header)
         if not location_data:
             api.abort(404, f"Emplacement '{location_name}' introuvable.")
@@ -56,7 +55,6 @@ class StockByLocation(Resource):
         if not location_id:
             api.abort(404, f"Emplacement avec id '{location_name}' introuvable.")
 
-        # get_stock now returns a list of dict
         stocks = get_stock(location_id, auth_header)
         return stocks
 
@@ -64,7 +62,7 @@ class StockByLocation(Resource):
     @jwt_required()
     def post(self):
         """Add or transfer stock to a location"""
-        auth_header = request.headers.get("Authorization")  # <== AJOUT ICI
+        auth_header = request.headers.get("Authorization")
         data = request.json
         location_name = data.get("location")
         product_id = data.get("product_id")
@@ -73,7 +71,7 @@ class StockByLocation(Resource):
         if not location_name or not isinstance(product_id, int) or not isinstance(quantity, int):
             api.abort(400, "Champs 'location', 'product_id', et 'quantity' requis.")
 
-        location_data = get_location_by_name_from_api(location_name, auth_header)  # <== AJOUT DU TOKEN
+        location_data = get_location_by_name_from_api(location_name, auth_header)
         if not location_data:
             api.abort(404, f"Emplacement '{location_name}' introuvable.")
         location_id = location_data["id"]
