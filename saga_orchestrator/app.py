@@ -11,7 +11,7 @@ from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
 from database import init_db
 from extensions import cache
-from saga_api import api as saga_api
+from saga_api import api as service_api
 
 app = Flask(__name__)
 
@@ -35,7 +35,7 @@ metrics = PrometheusMetrics(app)
 metrics.info('saga_app_info', 'Saga Orchestrator Service Info', version='1.0.0')
 
 api = Api(app, title="Saga Orchestrator API", version="1.0", doc="/api/docs")
-api.add_namespace(saga_api_namespace, path="/api/saga")
+api.add_namespace(service_api, path="/api/saga")
 
 app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {
     '/metrics': make_wsgi_app()
