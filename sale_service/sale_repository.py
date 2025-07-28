@@ -1,6 +1,5 @@
 """Sale module for the data access layer"""
 import requests
-from sqlalchemy.orm import joinedload
 from models import Sale
 from database import SessionLocal
 
@@ -21,8 +20,9 @@ def get_location_by_name_from_api(name, auth_header=None):
         return r.json()
     except requests.RequestException:
         return None
-    
+
 def get_location_by_id_from_api(location_id, auth_header=None):
+    """get location by id from api  """
     try:
         r = requests.get(f"{LOCATION_SVC}/api/locations/id/{location_id}",
                          headers=_auth_headers(auth_header), timeout=3)
@@ -164,6 +164,7 @@ def get_sales_by_location(location_id: int, page=1, size=10, sort_field="id", so
         session.close()
 
 def cancel_sale(sale_id, auth_header=None):
+    """cancel sale"""
     session = SessionLocal()
     try:
         sale = session.get(Sale, sale_id)

@@ -127,6 +127,7 @@ class SaleRecord(Resource):
 
 @api.route("/<int:sale_id>")
 class SaleDelete(Resource):
+    """delete sale"""
     @jwt_required()
     def delete(self, sale_id):
         """Cancel a sale by its ID"""
