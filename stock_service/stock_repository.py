@@ -18,7 +18,7 @@ def get_location_by_name_from_api(name, auth_header=None):
     try:
         headers = _auth_headers(auth_header)
         response = requests.get(
-            f"http://localhost:8001/api/locations/{quote(name)}",
+            f"http://location_service_1:5000/api/locations/{quote(name)}",
             headers=headers,
             timeout=3
         )
@@ -32,7 +32,7 @@ def get_location_by_id_from_api(location_id, auth_header=None):
     try:
         headers = _auth_headers(auth_header)
         response = requests.get(
-            f"http://localhost:8001/api/locations/id/{location_id}",
+            f"http://location_service_1:5000/api/locations/id/{location_id}",
             headers=headers,
             timeout=3
         )
@@ -46,7 +46,7 @@ def get_product_by_id_from_api(product_id, auth_header=None):
     try:
         headers = _auth_headers(auth_header)
         response = requests.get(
-            f"http://localhost:8002/api/products/get/{product_id}",
+            f"http://product_service_1:5000/api/products/get/{product_id}",
             headers=headers,
             timeout=3
         )
