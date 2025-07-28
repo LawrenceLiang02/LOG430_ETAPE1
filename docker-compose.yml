@@ -40,6 +40,8 @@ services:
       - "8002:5000"
     depends_on:
       - redis
+    volumes:
+      - ./volumes/product_service_1:/app/data
     environment:
       - SERVICE_NAME=product_service
 
@@ -51,6 +53,8 @@ services:
       - "8012:5000"
     depends_on:
       - redis
+    volumes:
+      - ./volumes/product_service_2:/app/data
     environment:
       - SERVICE_NAME=product_service
 
@@ -89,7 +93,7 @@ services:
 
   saga_service_1:
     build:
-      context: ./saga_serviec
+      context: ./saga_service
     container_name: saga_service_1
     ports:
       - "8006:5000"
