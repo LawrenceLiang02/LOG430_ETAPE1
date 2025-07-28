@@ -4,8 +4,8 @@ from database import SessionLocal
 from model import CommandeSaga, EtatSaga
 
 STOCK_SVC = "http://stock_service_1:5000"
-SALE_SVC = "http://sale_service:5000"
-PAYMENT_SVC = "http://payment_service:5000"  # Fake service
+SALE_SVC = "http://sale_service_1:5000"
+CART_SVC = "http://cart_service_1:5000"
 
 def _auth_headers(auth_header):
     return {"Authorization": auth_header} if auth_header else {}
@@ -17,9 +17,9 @@ def log_step(saga: CommandeSaga, step: str, session):
 def orchestrer_commande(user, cart, auth_header=None):
     """
     Orchestrate the saga:
-    1) Reserve stock
-    2) Simulate payment
-    3) Record sale
+    1) Reserve stock (deduct stock)
+    2) Checkout cart (acts like payment + validation)
+    3) Record sales
     On failure: rollback stock.
     """
     session = SessionLocal()
@@ -30,11 +30,14 @@ def orchestrer_commande(user, cart, auth_header=None):
 
         headers = _auth_headers(auth_header)
 
-        # Step 1: Reserve stock
         for item in cart:
             r = requests.post(
                 f"{STOCK_SVC}/api/stocks/deduct",
-                json={"product_id": item["product_id"], "location_id": item["location_id"], "quantity": item["quantity"]},
+                json={
+                    "product_id": item["product_id"],
+                    "location_id": item["location_id"],
+                    "quantity": item["quantity"]
+                },
                 headers=headers,
                 timeout=3
             )
@@ -46,32 +49,43 @@ def orchestrer_commande(user, cart, auth_header=None):
         saga.etat = EtatSaga.STOCK_RESERVE
         log_step(saga, "Stock reserved successfully", session)
 
-        # Step 2: Payment
-        pay_resp = requests.post(f"{PAYMENT_SVC}/pay", json={"user": user, "amount": 100}, headers=headers)
-        if pay_resp.status_code != 200:
+        checkout_resp = requests.post(
+            f"{CART_SVC}/api/cart/checkout",
+            headers=headers,
+            timeout=5
+        )
+        if checkout_resp.status_code != 200:
             saga.etat = EtatSaga.ECHEC
-            log_step(saga, "Payment failed", session)
-            # Compensation: re-add stock
+            log_step(saga, f"Cart checkout failed: {checkout_resp.text}", session)
             for item in cart:
-                requests.post(f"{STOCK_SVC}/api/stocks", json={
-                    "location": item["location"], "product_id": item["product_id"], "quantity": item["quantity"]
-                }, headers=headers)
+                requests.post(
+                    f"{STOCK_SVC}/api/stocks",
+                    json={
+                        "location": item["location"],
+                        "product_id": item["product_id"],
+                        "quantity": item["quantity"]
+                    },
+                    headers=headers
+                )
             session.commit()
-            return {"message": "Paiement refusé", "saga_id": saga.id}, 402
+            return {"message": "Échec de la commande (checkout)", "saga_id": saga.id}, 402
         saga.etat = EtatSaga.PAIEMENT_OK
-        log_step(saga, "Payment OK", session)
+        log_step(saga, "Cart checkout OK", session)
 
-        # Step 3: Sale
         for item in cart:
             s = requests.post(
-                f"{SALE_SVC}/api/sales/record",
-                json={"location": item["location"], "product_id": item["product_id"], "quantity": item["quantity"]},
+                f"{SALE_SVC}/api/sale/record",
+                json={
+                    "location": item["location"],
+                    "product_id": item["product_id"],
+                    "quantity": item["quantity"]
+                },
                 headers=headers,
                 timeout=3
             )
             if s.status_code != 201:
                 saga.etat = EtatSaga.ECHEC
-                log_step(saga, "Sale recording failed", session)
+                log_step(saga, f"Sale recording failed: {s.text}", session)
                 session.commit()
                 return {"message": "Erreur vente", "saga_id": saga.id}, 500
 
@@ -80,6 +94,7 @@ def orchestrer_commande(user, cart, auth_header=None):
         session.commit()
 
         return {"message": "Commande confirmée", "saga_id": saga.id}, 200
+
     except Exception as e:
         saga.etat = EtatSaga.ECHEC
         log_step(saga, f"Exception: {e}", session)
@@ -94,4 +109,9 @@ def get_saga_status(saga_id: int):
     session.close()
     if not saga:
         return None
-    return {"id": saga.id, "user": saga.user, "etat": saga.etat.value, "logs": saga.logs}
+    return {
+        "id": saga.id,
+        "user": saga.user,
+        "etat": saga.etat.value,
+        "logs": saga.logs
+    }
