@@ -1,6 +1,6 @@
 """Stock module for the data access layer"""
-import requests
 from urllib.parse import quote
+import requests
 from database import SessionLocal
 from models import Stock, StockRequest
 
