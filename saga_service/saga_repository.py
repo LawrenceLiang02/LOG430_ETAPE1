@@ -92,7 +92,7 @@ def orchestrer_commande(user, cart, auth_header=None):
                     headers=headers
                 )
             session.commit()
-            return {"message": "Échec de la commande (checkout)", "saga_id": saga.id, "error": checkout_resp.text}, 402
+            return {"message": "Échec de la commande (checkout)", "saga_id": saga.id}, 402
         saga.etat = EtatSaga.PAIEMENT_OK
         log_step(saga, "Cart checkout OK", session)
 
