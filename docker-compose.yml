@@ -102,6 +102,28 @@ services:
     environment:
       - SERVICE_NAME=saga_service
 
+  notification_service_1:
+    build:
+      context: ./notification_service
+    container_name: notification_service_1
+    ports:
+      - "8007:5000"
+    depends_on:
+      - redis
+    environment:
+      - SERVICE_NAME=notification_service
+
+  audit_service_1:
+    build:
+      context: ./audit_service
+    container_name: audit_service_1
+    ports:
+      - "8008:5000"
+    depends_on:
+      - redis
+    environment:
+      - SERVICE_NAME=audit_service
+
   redis:
     image: redis:latest
     container_name: redis
@@ -125,6 +147,8 @@ services:
       - sale_service_1
       - cart_service_1
       - saga_service_1
+      - notification_service_1
+      - audit_service_1
 
   krakend:
     image: krakend:latest
@@ -144,6 +168,8 @@ services:
       - sale_service_1
       - cart_service_1
       - saga_service_1
+      - notification_service_1
+      - audit_service_1
 
   prometheus:
     image: prom/prometheus:latest

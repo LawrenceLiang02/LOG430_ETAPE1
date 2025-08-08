@@ -1,0 +1,23 @@
+@startuml
+actor Utilisateur
+
+Utilisateur -> CartService : Ajoute article
+CartService -> EventBus : ArticleAjouteAuPanier
+EventBus -> StockService : ArticleAjouteAuPanier
+StockService -> Redis : Réserve le stock
+Redis --> StockService : OK
+StockService --> EventBus : StockReserve
+EventBus --> CartService : StockReserve
+CartService --> Utilisateur : Article ajouté au panier
+
+Utilisateur -> PaymentService : Effectue paiement
+PaymentService -> EventBus : PaiementEffectue
+EventBus -> OrderService : PaiementEffectue
+OrderService -> EventBus : CommandeConfirmee
+EventBus -> NotificationService : CommandeConfirmee
+NotificationService -> EmailSystem : Envoie notification
+EmailSystem --> NotificationService : Notification envoyée
+NotificationService --> EventBus : NotificationEnvoyee
+
+OrderService --> Utilisateur : Confirmation commande
+@enduml
