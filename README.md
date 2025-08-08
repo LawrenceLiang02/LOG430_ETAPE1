@@ -25,7 +25,40 @@ Les piles technologiques utilisé sont:
 - NGINX pour load balancing
 - Redis pour caching
 
-## Saga Orchestrateur
+## Architecture Événementielle (Lab 7)
+
+Le scénario métier choisi est celui d’un panier e-commerce, un processus représentatif et pertinent pour une architecture événementielle. 
+
+Les étapes sont:
+-	Ajout d’un article au panier
+-	Paiement
+-	Confirmation ou annulation
+
+### Bus de message
+Redis Stream
+
+### Producteurs d'événements:
+- cart_service lorsqu'il y a un post
+- sale_service lorsqu'il y a une vente
+
+### Abonnées aux événements (nouveaux services)
+Notification Service (localhost:8007):
+- get: /api/notifications/
+- post: /api/notifications/
+
+Audit Service (localhost:8008):
+- get: /api/audit/logs
+
+### Event Store:
+Base de donnée SQLite, écriture et lecture dans audit service.
+
+### CQRS: 
+
+Command: cart_service (add / checkout), sale_service (record)
+
+Query: Read Model alimenté par les événements comme l'état du panier
+
+## Saga Orchestrateur (Lab 6)
 
 Le scénario choisit est le suivant:
 
