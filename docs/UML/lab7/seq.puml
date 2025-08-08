@@ -10,14 +10,14 @@ StockService --> EventBus : StockReserve
 EventBus --> CartService : StockReserve
 CartService --> Utilisateur : Article ajouté au panier
 
-Utilisateur -> PaymentService : Effectue paiement
-PaymentService -> EventBus : PaiementEffectue
-EventBus -> OrderService : PaiementEffectue
-OrderService -> EventBus : CommandeConfirmee
+Utilisateur -> SaleService : Effectue paiement
+SaleService -> EventBus : PaiementEffectue
+EventBus -> SaleService : PaiementEffectue
+SaleService -> EventBus : CommandeConfirmee
 EventBus -> NotificationService : CommandeConfirmee
 NotificationService -> EmailSystem : Envoie notification
 EmailSystem --> NotificationService : Notification envoyée
 NotificationService --> EventBus : NotificationEnvoyee
 
-OrderService --> Utilisateur : Confirmation commande
+SaleService --> Utilisateur : Confirmation commande
 @enduml
