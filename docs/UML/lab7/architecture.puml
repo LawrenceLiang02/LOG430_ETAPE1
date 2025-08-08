@@ -1,0 +1,34 @@
+@startuml
+skinparam componentStyle rectangle
+left to right direction
+
+actor "Utilisateur" as User
+
+package "Microservices" {
+    [Cart Service] as Cart
+    [Stock Service] as Stock
+    [Sale Service] as Sale
+    [Notification Service] as Notify
+    [Audit Service] as Audit
+}
+
+file "Event Store\n(SQLite)" as Store
+queue "Bus de messages\n(Redis Streams)" as Bus
+database "Read Model\n(CQRS projection)" as ReadModel
+
+User --> Cart : Commandes (ajout, paiement)
+User --> Sale : Commande finale
+
+Cart --> Bus : ArticleAjouteAuPanier, PaiementEffectue, PaiementRefuse
+Sale --> Bus : CommandeConfirmee, CommandeAnnulee
+
+Bus --> Stock : Ajuste le stock
+Bus --> Notify : Envoie notification
+Bus --> Audit : Journalise
+Bus --> ReadModel : Met à jour vue lecture
+
+Audit --> Store : Stocke les événements
+
+ReadModel --> User : Requêtes (état, historique)
+
+@enduml
