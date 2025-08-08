@@ -14,7 +14,7 @@ La saga doit maintenir l’état courant de chaque commande (créée, stock rés
 
 ## Décision
 
-Nous avons choisi de persister la machine d’état dans une base SQLite locale dans le microservice `saga_service`.
+J'ai choisi de persister la machine d’état dans une base SQLite locale dans le microservice `saga_service`.
 
 ## Justification
 
