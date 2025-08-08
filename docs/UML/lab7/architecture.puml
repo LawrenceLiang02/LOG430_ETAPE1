@@ -12,8 +12,8 @@ package "Microservices" {
     [Audit Service] as Audit
 }
 
-file "Event Store\n(Redis/SQLite)" as Store
-queue "Bus de messages\n(Redis Streams / Kafka)" as Bus
+file "Event Store\n(SQLite)" as Store
+queue "Bus de messages\n(Redis Streams)" as Bus
 database "Read Model\n(CQRS projection)" as ReadModel
 
 User --> Cart : Commandes (ajout, paiement)

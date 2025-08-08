@@ -211,6 +211,8 @@ Non fonctionnels
 | 7 | Choix du système de cache (Redis) (labo 4) | [ADR 7](docs/ADR/ADR7.md) |
 | 8 | Choix d’une Saga Orchestrée vs Saga Chorégraphiée (labo 6) | [ADR 8](docs/ADR/ADR8.md) |
 | 9 | Persistance de la machine d’état avec SQLite (labo 6) | [ADR 9](docs/ADR/ADR9.md) |
+| 10 | Implémentation de CQRS dans SaleService (labo 7) | [ADR 10](docs/ADR/ADR10.md) |
+| 11 | Choix de Redis Streams comme bus d’événements (labo 7) | [ADR 11](docs/ADR/ADR11.md) |
 
 ## Choix technologique
 
