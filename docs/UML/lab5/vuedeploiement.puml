@@ -1,46 +1,47 @@
 @startuml depl
-node "Serveur 1" {
+node "Deploiement Docker" {
     [NGINX]
     [KrakenD]
-    [Redis]
     [Prometheus]
+
+    node "Auth Service" {
+        [Auth API]
+        file "auth.db (SQLite)"
+    }
+
+    node "Stock Service" {
+        [Stock API]
+        file "stock.db (SQLite)"
+    }
+
+    node "Sale Service" {
+        [Sale API]
+        file "sale.db (SQLite)"
+    }
+
+    node "Product Service" {
+        [Product API]
+        file "product.db (SQLite)"
+    }
+
+    node "Location Service" {
+        [Location API]
+        file "location.db (SQLite)"
+    }
 }
 
-cloud "Poste client"
+cloud "Poste client" as Client
 
-node "Auth Service" {
-    [Auth API]
-    database "SQLite Auth"
-}
-
-node "Stock Service" {
-    [Stock API]
-    database "SQLite Stock"
-}
-
-node "Sale Service" {
-    [Sale API]
-    database "SQLite Sale"
-}
-
-node "Product Service" {
-    [Product API]
-    database "SQLite Product"
-}
-
-node "Location Service" {
-    [Location API]
-    database "SQLite Location"
-}
-
-"Poste client" --> [NGINX]
+Client --> [NGINX]
 [NGINX] --> [KrakenD]
+
 [KrakenD] --> [Auth API]
 [KrakenD] --> [Stock API]
 [KrakenD] --> [Sale API]
 [KrakenD] --> [Product API]
 [KrakenD] --> [Location API]
-[Prometheus] --> [Auth API]
+
+[Prometheus] --> [Auth API] : scrape /metrics
 [Prometheus] --> [Stock API]
 [Prometheus] --> [Sale API]
 [Prometheus] --> [Product API]

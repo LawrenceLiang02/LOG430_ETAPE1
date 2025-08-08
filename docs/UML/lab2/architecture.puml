@@ -1,0 +1,16 @@
+@startuml architecture-lab1
+title Monolithic Architecture POS System
+
+node "App Container" {
+  component "API Layer" as API
+  component "Service Layer" as Service
+  component "Data Access Layer" as DAL
+
+  file "SQLite File" as SQLite
+  
+  API --> Service : Calls business logic
+  Service --> DAL : Interacts with data
+  DAL --> SQLite : SQLAlchemy
+}
+
+@enduml

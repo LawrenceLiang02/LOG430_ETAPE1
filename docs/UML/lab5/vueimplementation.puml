@@ -6,6 +6,7 @@ package "x_service" {
     [x_repository.py]
     [models.py]
     [database.py]
+    file "x_service.db (SQLite)"
 }
 
 package "gateway" {
