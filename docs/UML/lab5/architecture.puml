@@ -10,7 +10,7 @@ skinparam shadowing false
 package "Auth Service" {
     component AuthAPI <<API>>
     component AuthLogic <<Logic>>
-    database AuthDB <<SQLite>>
+    file AuthDB <<SQLite>>
 
     AuthAPI --> AuthLogic
     AuthLogic --> AuthDB
@@ -20,7 +20,7 @@ package "Auth Service" {
 package "Stock Service" {
     component StockAPI <<API>>
     component StockLogic <<Logic>>
-    database StockDB <<SQLite>>
+    file StockDB <<SQLite>>
 
     StockAPI --> StockLogic
     StockLogic --> StockDB
@@ -30,7 +30,7 @@ package "Stock Service" {
 package "Sale Service" {
     component SaleAPI <<API>>
     component SaleLogic <<Logic>>
-    database SaleDB <<SQLite>>
+    file SaleDB <<SQLite>>
 
     SaleAPI --> SaleLogic
     SaleLogic --> SaleDB
@@ -40,7 +40,7 @@ package "Sale Service" {
 package "Product Service" {
     component ProductAPI <<API>>
     component ProductLogic <<Logic>>
-    database ProductDB <<SQLite>>
+    file ProductDB <<SQLite>>
 
     ProductAPI --> ProductLogic
     ProductLogic --> ProductDB
@@ -50,7 +50,7 @@ package "Product Service" {
 package "Location Service" {
     component LocationAPI <<API>>
     component LocationLogic <<Logic>>
-    database LocationDB <<SQLite>>
+    file LocationDB <<SQLite>>
 
     LocationAPI --> LocationLogic
     LocationLogic --> LocationDB

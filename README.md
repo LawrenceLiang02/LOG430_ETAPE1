@@ -25,6 +25,104 @@ Les piles technologiques utilisé sont:
 - NGINX pour load balancing
 - Redis pour caching
 
+## Saga Orchestrateur
+
+Le scénario choisit est le suivant:
+
+1. Vérification de Stock
+2. Réservation de Stock
+3. Paiement
+4. Confirmation ou annulation de stock
+
+Les status sont persistées dans une base de donnée SQLite, et chaque transition est sauvegardé dans les logs.
+
+Voici le diagramme d'état:
+
+![Diagramme d'etat](./docs/UML/lab6/etat.png)
+
+### Cas de succès
+
+Une fois connecté (logged in), tu peux executer le saga orchestré avec le lien suivant:
+
+```http://localhost:8006/api/saga/start```
+
+Il faut attacher le Bearing token ainsi que ce body:
+
+```json
+{
+  "user": "John",
+  "cart": [
+    {
+      "location": "Magasin 1",
+      "product_id": 1,
+      "quantity": 1
+    }
+  ]
+}
+```
+
+Le résultat attendu est celui-ci:
+
+```json
+{
+    "message": "Commande confirmée",
+    "saga_id": 1
+}
+```
+
+### Cas d'échec
+
+#### Stock insuffisant
+
+Dans le cas de stock insuffisant, voici le JSON à soumettre:
+
+```json
+{
+  "user": "John",
+  "cart": [
+    {
+      "location": "Magasin 1",
+      "product_id": 2,
+      "quantity": 1
+    }
+  ]
+}
+```
+
+Voici la réponse attendu:
+
+```json
+{
+    "message": "Stock insuffisant",
+    "saga_id": 6,
+    "error": "{\n    \"message\": \"Stock insuffisant (0 disponibles).\"\n}\n"
+}
+```
+
+
+#### Erreur de vente
+
+Dans le cas d'une erreur de vente, soit le service de vente est offline, voici le restultat attendu:
+
+```json
+{
+    "message": "Erreur vente",
+    "saga_id": 8,
+}
+```
+
+#### Erreur de paiement:
+
+Dans le cas d'une erreur de paiement:
+
+```json
+{
+    "message": "Échec de la commande (checkout)",
+    "saga_id": 9,
+}
+```
+
+
 ## L'architecture
 
 ### Laboratoire 5:
@@ -78,6 +176,8 @@ Non fonctionnels
 | 5 | Choix de la passerelle API (KrakenD) (labo 5) | [ADR 5](docs/ADR/ADR5.md) |
 | 6 | Choix du reverse proxy (NGINX) (labo 4) | [ADR 6](docs/ADR/ADR6.md) |
 | 7 | Choix du système de cache (Redis) (labo 4) | [ADR 7](docs/ADR/ADR7.md) |
+| 8 | Choix d’une Saga Orchestrée vs Saga Chorégraphiée (labo 6) | [ADR 8](docs/ADR/ADR8.md) |
+| 9 | Persistance de la machine d’état avec SQLite (labo 6) | [ADR 9](docs/ADR/ADR9.md) |
 
 ## Choix technologique
 
@@ -103,12 +203,14 @@ Cette documentation contient:
 - Liste de tout les endpoints
 
 Voici les ports pour chaque service:
+- Krakend API Gateway: 8081
 - Auth: 8000
 - Location: 8001
 - Product: 8002
 - Stock: 8003
 - Sale: 8004
 - Cart: 8005
+- Saga: 8006
 
 ## Authentification
 
@@ -119,7 +221,7 @@ Une fois que vous vous etes authentifiés à `http://localhost:8080/auth/login` 
 ```
 {
   "username": "admin",
-  "password": "adminpass"
+  "password": "admin"
 }
 ```
 
@@ -152,17 +254,20 @@ Pour chaque requetes, ajoutez un Bearer header dans l'authentification avec le t
 ## Instruction d'installation et d'execution pour le developpement
 
 ### Cloner le projet
+
 Git bash: `git clone https://github.com/LawrenceLiang02/LOG430_ETAPE1.git`
 
 ### Installer un environnement virtuel
+
 [Suivre les instructions dans ce lien](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/) pour installer un .venv.
 
 ### Installer les librairies
+
 Terminal: `pip install -r requirements.txt`
 
 ### Build et executer avec Docker
-`docker-compose build`
-`docker-compose up`
+
+`docker-compose up --build -d`
 
 ### Executer l'app
 

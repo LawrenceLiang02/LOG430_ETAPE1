@@ -1,0 +1,20 @@
+@startuml
+actor Utilisateur
+participant "API Gateway (KrakenD)" as Gateway
+participant "Auth Service" as Auth
+participant "Stock Service" as Stock
+
+== Authentification ==
+Utilisateur -> Gateway : POST /api/auth/login (identifiants)
+Gateway -> Auth : POST /login
+Auth -> Auth : Vérifie les identifiants
+Auth --> Gateway : JWT token
+Gateway --> Utilisateur : JWT token
+
+== Consultation du stock ==
+Utilisateur -> Gateway : GET /api/stock?location=X\nAuthorization: Bearer <JWT>
+Gateway -> Stock : GET /stock?location=X\nAuthorization: Bearer <JWT>
+Stock -> Stock : Vérifie le token et récupère les données
+Stock --> Gateway : Données de stock
+Gateway --> Utilisateur : Données de stock
+@enduml

@@ -1,7 +1,6 @@
 @startuml cu
 left to right direction
-actor Admin
-actor Client
+actor User
 
 rectangle "Système Caisse" {
     usecase "S'authentifier" as UC1
@@ -12,10 +11,10 @@ rectangle "Système Caisse" {
     usecase "Creer un compte" as UC6
 }
 
-Vendeur --> UC1
-Vendeur --> UC2
-Vendeur --> UC3
-Vendeur --> UC4
-Vendeur --> UC5
-Client --> UC6
+User --> UC1
+User --> UC2
+User --> UC3
+User --> UC4
+User --> UC5
+User --> UC6
 @enduml

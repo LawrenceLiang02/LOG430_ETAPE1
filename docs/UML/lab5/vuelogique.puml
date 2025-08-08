@@ -1,26 +1,26 @@
 @startuml log
 package "Auth Service" {
     [AuthAPI] --> [AuthLogic]
-    [AuthLogic] --> [AuthDB] <<SQLite>>
+    [AuthLogic] --> file "auth.db (SQLite)"
 }
 
 package "Stock Service" {
     [StockAPI] --> [StockLogic]
-    [StockLogic] --> [StockDB] <<SQLite>>
+    [StockLogic] --> file "stock.db (SQLite)"
 }
 
 package "Sale Service" {
     [SaleAPI] --> [SaleLogic]
-    [SaleLogic] --> [SaleDB] <<SQLite>>
+    [SaleLogic] --> file "sale.db (SQLite)"
 }
 
 package "Product Service" {
     [ProductAPI] --> [ProductLogic]
-    [ProductLogic] --> [ProductDB] <<SQLite>>
+    [ProductLogic] --> file "product.db (SQLite)"
 }
 
 package "Location Service" {
     [LocationAPI] --> [LocationLogic]
-    [LocationLogic] --> [LocationDB] <<SQLite>>
+    [LocationLogic] --> file "location.db (SQLite)"
 }
 @enduml

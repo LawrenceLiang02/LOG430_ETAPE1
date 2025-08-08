@@ -1,0 +1,34 @@
+@startuml etat
+skinparam state {
+  BackgroundColor<<success>> LightGreen
+  BackgroundColor<<failure>> LightCoral
+  BackgroundColor<<processing>> LightBlue
+}
+
+[*] --> Créée : Nouvelle commande
+
+state Créée {
+}
+
+Créée --> StockRéservé : Stock réservé avec succès
+Créée --> Échec : Stock insuffisant <<failure>>
+
+state StockRéservé <<processing>> {
+}
+
+StockRéservé --> PaiementOK : Checkout réussi
+StockRéservé --> Échec : Échec checkout / paiement <<failure>>
+
+state PaiementOK <<processing>> {
+}
+
+PaiementOK --> Confirmée : Vente enregistrée
+PaiementOK --> Échec : Échec enregistrement vente <<failure>>
+
+state Confirmée <<success>> {
+}
+
+state Échec <<failure>> {
+}
+
+@enduml
